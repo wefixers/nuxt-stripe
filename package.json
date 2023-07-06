@@ -9,6 +9,11 @@
     "type": "git",
     "url": "https://github.com/wefixers/nuxt-stripe.git"
   },
+  "keywords": [
+    "nuxt",
+    "stripe",
+    "stripe-webhook"
+  ],
   "exports": {
     ".": {
       "types": "./dist/types.d.ts",
