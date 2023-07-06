@@ -3,7 +3,7 @@ import type { ChildProcess } from 'node:child_process'
 import { spawn } from 'node:child_process'
 
 import type { StripeConstructorOptions } from '@stripe/stripe-js'
-import { addPlugin, addTemplate, createResolver, defineNuxtModule, findPath, useLogger } from '@nuxt/kit'
+import { addImports, addPlugin, addTemplate, createResolver, defineNuxtModule, findPath, useLogger } from '@nuxt/kit'
 import { normalize, relative } from 'pathe'
 import { joinURL } from 'ufo'
 import defu from 'defu'
@@ -69,6 +69,13 @@ export default defineNuxtModule<Partial<ModuleOptions>>({
     const resolver = createResolver(import.meta.url)
 
     addPlugin(resolver.resolve('./runtime/plugin'))
+
+    addImports([
+      {
+        name: 'useStripe',
+        from: resolver.resolve('./runtime/composables'),
+      },
+    ])
 
     const serverRuntime = resolver.resolve('./runtime/server/stripe')
 
