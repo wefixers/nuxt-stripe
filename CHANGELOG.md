@@ -1,6 +1,19 @@
 # Changelog
 
 
+## v1.1.1
+
+[compare changes](https://github.com/wefixers/nuxt-stripe/compare/v1.1.0...v1.1.1)
+
+
+### 🩹 Fixes
+
+  - Include fallback server files in npm package ([da49de8](https://github.com/wefixers/nuxt-stripe/commit/da49de8))
+
+### ❤️  Contributors
+
+- Lucacicada
+
 ## v1.1.0
 
 [compare changes](https://github.com/wefixers/nuxt-stripe/compare/v1.0.1...v1.1.0)
