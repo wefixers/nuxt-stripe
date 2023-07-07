@@ -28,7 +28,9 @@
   "main": "./dist/module.cjs",
   "types": "./dist/types.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "server.mjs",
+    "server.d.ts"
   ],
   "scripts": {
     "prepack": "nuxt-module-build",
