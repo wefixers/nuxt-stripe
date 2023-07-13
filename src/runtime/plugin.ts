@@ -1,18 +1,42 @@
 import type { Stripe, StripeConstructorOptions } from '@stripe/stripe-js'
-import { loadStripe } from '@stripe/stripe-js/pure'
+import { loadScript } from '@fixers/stripe-js'
 
 import type { ModulePublicRuntimeConfig } from '../module'
 
 import type { Plugin } from '#app'
 import { defineNuxtPlugin, useRuntimeConfig } from '#app'
 
-async function createClient(options?: StripeConstructorOptions, publishableKey?: string): Promise<Stripe> {
+export interface CreateStripeOptions extends StripeConstructorOptions {
+  /**
+   * Override the runtime configured publishable key.
+   */
+  publishableKey?: string
+
+  /**
+   * Set it to `false` to [disable advanced fraud detection](https://stripe.com/docs/disputes/prevention/advanced-fraud-detection#disabling-advanced-fraud-detection)
+   *
+   * @default true
+   */
+  advancedFraudSignals?: boolean
+}
+
+async function createClient(options?: CreateStripeOptions): Promise<Stripe> {
   const stripeRuntimeConfig: ModulePublicRuntimeConfig | undefined = useRuntimeConfig().public.stripe
 
-  const stripe = await loadStripe(publishableKey || stripeRuntimeConfig?.publishableKey || '', {
-    ...stripeRuntimeConfig?.client,
-    ...options,
+  const { publishableKey, advancedFraudSignals, ...stripeOptions } = options || {}
+
+  const stripeConstructor = await loadScript({
+    advancedFraudSignals: advancedFraudSignals || true,
   })
+
+  let stripe: Stripe
+
+  if (stripeConstructor) {
+    stripe = stripeConstructor(publishableKey || stripeRuntimeConfig?.publishableKey, {
+      ...stripeRuntimeConfig?.client,
+      ...stripeOptions,
+    })
+  }
 
   // Stripe is null in SSR
   return stripe!
@@ -28,7 +52,7 @@ export interface StripePlugin {
    * ### Note:
    * In SSR this method return null, as the client library cannot be loaded.
    */
-  createClient: (options?: StripeConstructorOptions, overridePublishableKey?: string) => Promise<Stripe>
+  createClient: (options?: CreateStripeOptions) => Promise<Stripe>
 }
 
 /**
