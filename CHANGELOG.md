@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.2.1
+
+[compare changes](https://github.com/wefixers/nuxt-stripe/compare/v1.2.0...v1.2.1)
+
+### 🏡 Chore
+
+- Upgrade ([03de843](https://github.com/wefixers/nuxt-stripe/commit/03de843))
+
+### ❤️  Contributors
+
+- Lucacicada
+
 ## v1.2.0
 
 [compare changes](https://github.com/wefixers/nuxt-stripe/compare/v1.1.1...v1.2.0)
