@@ -1,6 +1,23 @@
 # Changelog
 
 
+## v1.2.0
+
+[compare changes](https://github.com/wefixers/nuxt-stripe/compare/v1.1.1...v1.2.0)
+
+
+### 🚀 Enhancements
+
+  - AdvancedFraudSignals and publishableKey options! ([0778201](https://github.com/wefixers/nuxt-stripe/commit/0778201))
+
+### 🏡 Chore
+
+  - Swap stripe-js lib ([918bb03](https://github.com/wefixers/nuxt-stripe/commit/918bb03))
+
+### ❤️  Contributors
+
+- Lucacicada
+
 ## v1.1.1
 
 [compare changes](https://github.com/wefixers/nuxt-stripe/compare/v1.1.0...v1.1.1)
