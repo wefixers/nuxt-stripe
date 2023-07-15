@@ -121,10 +121,10 @@ export default defineNuxtConfig({
 
 > Do not attempt to manipulate the event, any value you return will be available in the Stripe dashboard in the form `{ ok: true, data: <your returned data> }`, you can always handle the Stripe webhook manually.
 
-Create the file `api/server/webhook.ts`:
+Create the file `api/stripe/webhook.ts`:
 
 ```ts
-// api/server/webhook.ts
+// api/stripe/webhook.ts
 
 /// <reference types="../../../.nuxt/types/stripe.d.ts" />
 
@@ -148,7 +148,7 @@ If you want to manually create the Stripe instance but still want to use the mod
 
 
 ```ts
-// api/server/webhook.ts
+// api/stripe/webhook.ts
 
 /// <reference types="../../../.nuxt/types/stripe.d.ts" />
 
