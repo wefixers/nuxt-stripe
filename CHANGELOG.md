@@ -1,6 +1,19 @@
 # Changelog
 
 
+## v2.0.0
+
+[compare changes](https://github.com/wefixers/nuxt-stripe/compare/v1.2.1...v2.0.0)
+
+### 🏡 Chore
+
+- Fix doc typo ([f328b20](https://github.com/wefixers/nuxt-stripe/commit/f328b20))
+- Pin Stripe API version to 2023-08-16 ([e7fb72a](https://github.com/wefixers/nuxt-stripe/commit/e7fb72a))
+
+### ❤️ Contributors
+
+- Lucacicada
+
 ## v1.2.1
 
 [compare changes](https://github.com/wefixers/nuxt-stripe/compare/v1.2.0...v1.2.1)
