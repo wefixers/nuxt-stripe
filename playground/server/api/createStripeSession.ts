@@ -5,7 +5,7 @@ import { env } from '../../env'
 
 export default eventHandler(async () => {
   const stripe = new Stripe(env.STRIPE_CLIENT_SECRET, {
-    apiVersion: '2022-11-15',
+    apiVersion: '2023-08-16',
   })
 
   const session = await stripe.checkout.sessions.create({

@@ -64,7 +64,7 @@ export interface CreateStripeOptions {
    * ### Note:
    * This field is not used if {@link stripe} is set.
    *
-   * Default api version `2022-11-15`.
+   * Default api version `2023-08-16`.
    */
   config?: Partial<Stripe.StripeConfig>
 }
@@ -75,7 +75,7 @@ export interface CreateStripeOptions {
 export function createDefaultStripe(options?: CreateStripeOptions) {
   const webhookSecret = options?.webhookSecret || defaultStripeWebhookSecret()
   const stripe = options?.stripe || new Stripe(options?.apiKey || defaultStripeSecret(), {
-    apiVersion: '2022-11-15',
+    apiVersion: '2023-08-16',
     ...options?.config,
   })
 

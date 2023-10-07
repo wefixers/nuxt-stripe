@@ -102,7 +102,7 @@ declare module '#stripe' {
 
     nuxt.hook('prepare:types', (options) => {
       options.references.push({
-        path: resolver.resolve(nuxt.options.buildDir, 'types/upload.d.ts'),
+        path: resolver.resolve(nuxt.options.buildDir, 'types/stripe.d.ts'),
       })
     })
 
