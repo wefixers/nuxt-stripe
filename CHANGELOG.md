@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v2.0.1
+
+[compare changes](https://github.com/wefixers/nuxt-stripe/compare/v2.0.0...v2.0.1)
+
+### 🏡 Chore
+
+- **release:** V2.0.0 ([4d460a9](https://github.com/wefixers/nuxt-stripe/commit/4d460a9))
+
+### ❤️ Contributors
+
+- Lucacicada
+
 ## v2.0.0
 
 [compare changes](https://github.com/wefixers/nuxt-stripe/compare/v1.2.1...v2.0.0)
