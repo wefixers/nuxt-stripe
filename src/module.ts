@@ -3,7 +3,7 @@ import type { ChildProcess } from 'node:child_process'
 import { spawn } from 'node:child_process'
 
 import type { StripeConstructorOptions } from '@stripe/stripe-js'
-import { addImports, addPlugin, addTemplate, createResolver, defineNuxtModule, findPath, useLogger } from '@nuxt/kit'
+import { addImports, addTemplate, createResolver, defineNuxtModule, findPath, useLogger } from '@nuxt/kit'
 import { normalize, relative } from 'pathe'
 import { joinURL } from 'ufo'
 import defu from 'defu'
@@ -68,8 +68,6 @@ export default defineNuxtModule<Partial<ModuleOptions>>({
 
     const resolver = createResolver(import.meta.url)
 
-    addPlugin(resolver.resolve('./runtime/plugin'))
-
     addImports([
       {
         name: 'useStripe',
@@ -93,9 +91,11 @@ declare module '#stripe' {
 
       // Inline module runtime in Nitro bundle
       nitroConfig.externals = defu(
-        typeof nitroConfig.externals === 'object' ? nitroConfig.externals : {}, {
+        typeof nitroConfig.externals === 'object' ? nitroConfig.externals : {},
+        {
           inline: [resolver.resolve('./runtime')],
-        })
+        },
+      )
 
       nitroConfig.alias['#stripe'] = serverRuntime
     })
