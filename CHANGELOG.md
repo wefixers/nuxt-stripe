@@ -1,6 +1,25 @@
 # Changelog
 
 
+## v3.0.0
+
+[compare changes](https://github.com/wefixers/nuxt-stripe/compare/v2.0.0...v3.0.0)
+
+### 🏡 Chore
+
+- **release:** V2.0.0 ([4d460a9](https://github.com/wefixers/nuxt-stripe/commit/4d460a9))
+- **release:** V2.0.1 ([f04a1cd](https://github.com/wefixers/nuxt-stripe/commit/f04a1cd))
+- Remove nuxt Plugin in favor of composable ([17a0065](https://github.com/wefixers/nuxt-stripe/commit/17a0065))
+- Update @antfu/eslint to version 2 ([a3929b9](https://github.com/wefixers/nuxt-stripe/commit/a3929b9))
+- Delete test files and configuration ([2699230](https://github.com/wefixers/nuxt-stripe/commit/2699230))
+- Pin Stripe API version to 2023-10-16 ([8432ebe](https://github.com/wefixers/nuxt-stripe/commit/8432ebe))
+- Update dependencies and configuration files ([0b5ebaa](https://github.com/wefixers/nuxt-stripe/commit/0b5ebaa))
+- Remove nuxt plugin from playground ([ebf4489](https://github.com/wefixers/nuxt-stripe/commit/ebf4489))
+
+### ❤️ Contributors
+
+- Lucacicada
+
 ## v2.0.1
 
 [compare changes](https://github.com/wefixers/nuxt-stripe/compare/v2.0.0...v2.0.1)
