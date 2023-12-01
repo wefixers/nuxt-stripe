@@ -163,7 +163,7 @@ export default defineStripeWebhook(({ event, stripe, stripeEvent }) => {
 }, {
   webhookSecret: process.env.SOME_SECRET,
   stripe: new Stripe(process.env.SOME_API_SECRET, {
-    apiVersion: '2023-08-16',
+    apiVersion: '2023-10-16',
   })
 })
 ```
