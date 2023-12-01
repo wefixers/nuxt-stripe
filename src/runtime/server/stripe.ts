@@ -1,6 +1,6 @@
 import Stripe from 'stripe'
 
-import type { EventHandler, H3Event } from 'h3'
+import type { H3Event } from 'h3'
 import { eventHandler, getHeader, getMethod, isMethod, readRawBody, setResponseStatus } from 'h3'
 
 /**
@@ -64,7 +64,7 @@ export interface CreateStripeOptions {
    * ### Note:
    * This field is not used if {@link stripe} is set.
    *
-   * Default api version `2023-08-16`.
+   * Default api version `2023-10-16`.
    */
   config?: Partial<Stripe.StripeConfig>
 }
@@ -75,7 +75,7 @@ export interface CreateStripeOptions {
 export function createDefaultStripe(options?: CreateStripeOptions) {
   const webhookSecret = options?.webhookSecret || defaultStripeWebhookSecret()
   const stripe = options?.stripe || new Stripe(options?.apiKey || defaultStripeSecret(), {
-    apiVersion: '2023-08-16',
+    apiVersion: '2023-10-16',
     ...options?.config,
   })
 
@@ -158,7 +158,7 @@ export type StripeEventHandlerResult = {
  *
  * Throw an exception to reject the webhook event, the exception message will be available in the Stripe dashboard.
  */
-export function defineStripeWebhook(handler: StripeEventHandler, options?: CreateStripeOptions): EventHandler<StripeEventHandlerResult> {
+export function defineStripeWebhook(handler: StripeEventHandler, options?: CreateStripeOptions) {
   // NOTE: Stripe only sends webhooks from a specific set of IP: https://stripe.com/files/ips/ips_webhooks.txt
   // however, we do not enforce that as explained below.
 
@@ -179,12 +179,12 @@ export function defineStripeWebhook(handler: StripeEventHandler, options?: Creat
    */
   let webhookSecret: string
 
-  return eventHandler<StripeEventHandlerResult>(async (event: H3Event) => {
+  return eventHandler(async (event) => {
     // Stripe allows for GET webhooks as well, we do not, reject all non-body requests
     if (!isMethod(event, ['POST', 'PUT', 'PATCH', 'DELETE'])) {
       setResponseStatus(event, 400)
 
-      return {
+      return <StripeEventHandlerResult>{
         ok: false,
         message: `Unsupported Method: ${getMethod(event)}`,
       }
@@ -219,14 +219,14 @@ export function defineStripeWebhook(handler: StripeEventHandler, options?: Creat
       console.error(`Stripe Webhook Error: ${e}`)
 
       setResponseStatus(event, 400)
-      return {
+      return <StripeEventHandlerResult>{
         ok: false,
         message: getErrorMessage(e),
       }
     }
 
     // signal back stripe we have processed the event
-    return {
+    return <StripeEventHandlerResult>{
       ok: true,
       data: result,
     }
