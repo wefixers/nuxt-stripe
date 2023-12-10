@@ -1,9 +1,11 @@
-# Nuxt Stripe
+[![nuxt-stripe-social-card](/docs/public/social-card.png)](https://nuxt-stripe.fixers.dev/)
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
 [![License][license-src]][license-href]
 [![Nuxt][nuxt-src]][nuxt-href]
+
+# Nuxt Stripe
 
 A Nuxt module for Stripe, with local webhook testing support out of the box.
 
