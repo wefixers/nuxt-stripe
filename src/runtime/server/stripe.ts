@@ -237,13 +237,13 @@ export function defineStripeWebhook(handler: StripeEventHandler, options?: Creat
  * Extract the `message` property from an error.
  */
 function getErrorMessage(e: any): string {
+  if (!e) {
+    return ''
+  }
+
   if (typeof e === 'string') {
-    return e || ''
+    return e
   }
 
-  if (typeof e.message === 'string') {
-    return e.message || ''
-  }
-
-  return ''
+  return typeof e.message === 'string' ? e.message : ''
 }
