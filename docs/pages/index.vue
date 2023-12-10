@@ -1,6 +1,10 @@
 <script setup lang="ts">
 const { data: page } = await useAsyncData('index', () => queryContent('/').findOne())
 
+definePageMeta({
+  colorMode: 'dark',
+})
+
 useSeoMeta({
   title: page.value.title,
   ogTitle: page.value.title,
