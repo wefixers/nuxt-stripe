@@ -16,20 +16,9 @@ async function checkout() {
 </script>
 
 <template>
-  <div class="container">
+  <div>
     <button @click="checkout">
-      Checkout useNuxtApp()
-    </button>
-
-    <button @click="checkoutWithComposables">
-      Checkout useNuxtApp()
+      Checkout
     </button>
   </div>
 </template>
-
-<style scoped>
-.container {
-  display: flex;
-  gap: 16px;
-}
-</style>
