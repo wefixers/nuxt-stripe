@@ -66,7 +66,7 @@ async function checkout() {
 
 In your `.env`, add you Stripe Publishable Key (prefixed with `pk_`):
 
-```env
+```ini
 NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_<...>"
 ```
 
@@ -74,7 +74,7 @@ Additionally, the library automatically use environment variable server-side whe
 
 Stripe API Key Secrets (pick one of the following):
 
-```env
+```ini
 # Highest priority
 NUXT_STRIPE_SECRET="sk_"
 
@@ -87,7 +87,7 @@ STRIPE_SECRET="sk_"
 
 Stripe Webhook Secrets (pick one of the following):
 
-```env
+```ini
 # Highest priority
 NUXT_STRIPE_WEBHOOK_SECRET="whsec_"
 

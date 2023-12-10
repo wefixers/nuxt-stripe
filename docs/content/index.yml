@@ -1,0 +1,30 @@
+title: 'Nuxt Stripe: Payment integration for Nuxt'
+description: Integrate Stripe payments in seconds with local testing out of the box.
+navigation: false
+hero:
+  title: 'Handle payment with :br [Nuxt]{.text-primary} Stripe'
+  description: Integrate Stripe payments in seconds with local testing out of the box
+  orientation: horizontal
+  links:
+    - label: Get started
+      icon: i-heroicons-rocket-launch
+      to: /get-started/installation
+      size: lg
+
+features:
+  title: Handle payments with ease
+  items:
+    - title: Nuxt 3
+      description: Powered by Nuxt 3 for optimal performances and SEO.
+      icon: i-simple-icons-nuxtdotjs
+      to: 'https://nuxt.com'
+      target: _blank
+    - title: Webhooks
+      description: Local webhook testing out of the box.
+      icon: i-heroicons-command-line
+      to: 'https://content.nuxt.com'
+      target: _blank
+    - title: Already configured
+      description: No configuration needed, just install and use.
+      icon: i-heroicons-cog-6-tooth
+      to: /get-started/configuration
