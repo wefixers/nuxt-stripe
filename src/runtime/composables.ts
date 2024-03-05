@@ -1,5 +1,5 @@
 import type { Stripe, StripeConstructorOptions } from '@stripe/stripe-js'
-import { loadScript } from '@fixers/stripe-js'
+import { loadStripe } from '@stripe/stripe-js/pure'
 
 import type { ModulePublicRuntimeConfig } from '../module'
 import { useRuntimeConfig } from '#imports'
@@ -39,19 +39,17 @@ export function useStripe() {
 
       const { publishableKey, advancedFraudSignals, ...stripeOptions } = options || {}
 
-      const stripeConstructor = await loadScript({
+      loadStripe.setLoadParameters({
         advancedFraudSignals: advancedFraudSignals ?? true,
       })
 
-      if (stripeConstructor) {
-        return stripeConstructor(publishableKey ?? stripeRuntimeConfig?.publishableKey ?? '', {
-          ...stripeRuntimeConfig?.client,
-          ...stripeOptions,
-        })
-      }
+      const stripe = await loadStripe(publishableKey ?? stripeRuntimeConfig?.publishableKey ?? '', {
+        ...stripeRuntimeConfig?.client,
+        ...stripeOptions,
+      })
 
       // Stripe is null in SSR
-      return null!
+      return stripe ?? null!
     },
   }
 }
