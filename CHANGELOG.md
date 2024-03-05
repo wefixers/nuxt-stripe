@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v3.0.1
+
+[compare changes](https://github.com/wefixers/nuxt-stripe/compare/v0.0.1...v3.0.1)
+
+### 🏡 Chore
+
+- Use startSubprocess for Stripe CLI ([aabd2f0](https://github.com/wefixers/nuxt-stripe/commit/aabd2f0))
+
+### ❤️ Contributors
+
+- Lucacicada
+
 ## v3.0.0
 
 [compare changes](https://github.com/wefixers/nuxt-stripe/compare/v2.0.0...v3.0.0)
