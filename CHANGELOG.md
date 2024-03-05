@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v3.0.3
+
+[compare changes](https://github.com/wefixers/nuxt-stripe/compare/v3.0.2...v3.0.3)
+
+### 🏡 Chore
+
+- Use @stripe/stripe-js v3 ([5bffc13](https://github.com/wefixers/nuxt-stripe/commit/5bffc13))
+
+### ❤️ Contributors
+
+- Lucacicada
+
 ## v3.0.2
 
 [compare changes](https://github.com/wefixers/nuxt-stripe/compare/v3.0.1...v3.0.2)

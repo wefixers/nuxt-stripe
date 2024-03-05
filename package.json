@@ -1,7 +1,7 @@
 {
   "name": "@fixers/nuxt-stripe",
   "type": "module",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "A Nuxt module for Stripe",
   "author": "Luca <git@lucacicada.me>",
   "license": "MIT",
