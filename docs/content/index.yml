@@ -22,7 +22,7 @@ features:
     - title: Webhooks
       description: Local webhook testing out of the box.
       icon: i-heroicons-command-line
-      to: 'https://content.nuxt.com'
+      to: /stripe-cli
       target: _blank
     - title: Already configured
       description: No configuration needed, just install and use.
