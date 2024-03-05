@@ -1,9 +1,6 @@
-import type { AddressInfo } from 'node:net'
-import type { ChildProcess } from 'node:child_process'
-import { spawn } from 'node:child_process'
-
 import type { StripeConstructorOptions } from '@stripe/stripe-js'
 import { addImports, addTemplate, createResolver, defineNuxtModule, findPath, useLogger } from '@nuxt/kit'
+import { startSubprocess } from '@nuxt/devtools-kit'
 import { normalize, relative } from 'pathe'
 import { joinURL } from 'ufo'
 import defu from 'defu'
@@ -56,7 +53,7 @@ export default defineNuxtModule<Partial<ModuleOptions>>({
     logger.info(`\`${name}\` setup...`)
 
     nuxt.options.runtimeConfig.public.stripe = defu(
-      nuxt.options.runtimeConfig.public.stripe,
+      nuxt.options.runtimeConfig.public.stripe as any,
       {
         publishableKey: options.publishableKey,
         client: options.client,
@@ -118,57 +115,27 @@ declare module '#stripe' {
       }
 
       if (stripeWebhookPath) {
-        let stripeProcess: ChildProcess | undefined
+        const port = nuxt.options.devServer.port
+        const webhookPath = joinURL(`localhost:${port}`, stripeWebhookPath!)
 
-        nuxt.hook('listen', (e) => {
-          const port = (e.address() as AddressInfo).port
-          const webhookPath = joinURL(`localhost:${port}`, stripeWebhookPath!)
+        startSubprocess(
+          {
+            command: 'stripe',
+            // stripe listen --forward-to localhost:3000/api/stripe/webhook
+            args: ['listen', '--forward-to', webhookPath],
+          },
+          {
+            id: 'nuxt-stripe-cli',
+            name: 'Stripe CLI',
+            icon: 'simple-icons:stripe',
+          },
+          nuxt,
+        )
 
-          // stripe listen --forward-to localhost:3000/api/stripe/webhook
-          stripeProcess = spawn('stripe', [
-            'listen',
-            '--forward-to',
-            webhookPath,
-          ])
-
-          const handleProcessSignals = (): void => {
-            if (!stripeProcess?.killed) {
-              stripeProcess?.kill()
-              stripeProcess = undefined
-            }
+        nuxt.hook('devtools:terminal:write', ({ id, data }) => {
+          if (id === 'nuxt-stripe-cli') {
+            logger.info(`> ${data}`)
           }
-
-          process.on('SIGINT', handleProcessSignals)
-          process.on('SIGTERM', handleProcessSignals)
-
-          stripeProcess.stdout!.setEncoding('utf8')
-          stripeProcess.stdout!.on('data', (data: string) => {
-            data = data.trim()
-            if (data) {
-              logger.info(`Stripe:\n${data}\n`)
-            }
-          })
-
-          stripeProcess.on('exit', () => {
-            stripeProcess = undefined
-          })
-
-          stripeProcess.on('spawn', () => {
-            logger.info(`Listening Stripe Webhook events: ${stripeWebhookPath}`)
-          })
-
-          stripeProcess.on('error', (err: any) => {
-            handleProcessSignals()
-            stripeProcess = undefined
-
-            if (err.code === 'ENOENT') {
-              logger.warn('Stripe CLI is missing: https://stripe.com/docs/stripe-cli#install\nYou will not be able to test the webhook')
-            }
-          })
-        })
-
-        nuxt.hook('close', () => {
-          stripeProcess?.kill()
         })
       }
     }
