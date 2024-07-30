@@ -2,7 +2,7 @@
 import type { StripeElements, StripeElementsOptions } from '@stripe/stripe-js'
 import { inject, provide, watch } from 'vue'
 
-import type { StripeContext } from '../types'
+import type { StripeContext } from '../../types'
 
 const props = defineProps<{
   options?: StripeElementsOptions

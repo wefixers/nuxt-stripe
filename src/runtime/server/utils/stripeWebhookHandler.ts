@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import { assertMethod, eventHandler, readRawBody } from 'h3'
+import { assertMethod, eventHandler } from 'h3'
 
 import type Stripe from 'stripe'
 

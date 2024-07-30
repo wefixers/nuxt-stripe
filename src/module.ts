@@ -177,14 +177,14 @@ export default defineNuxtModule<ModuleOptions>({
     const resolver = createResolver(import.meta.url)
 
     addComponentsDir({
-      path: resolver.resolve('./runtime/components'),
+      path: resolver.resolve('./runtime/app/components'),
       pathPrefix: false,
       prefix: '',
       global: true,
     })
 
     addImportsDir(
-      resolver.resolve('./runtime/composables'),
+      resolver.resolve('./runtime/app/composables'),
     )
 
     addServerImportsDir(

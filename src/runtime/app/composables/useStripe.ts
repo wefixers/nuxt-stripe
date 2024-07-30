@@ -6,7 +6,7 @@ import { computedAsync } from '@vueuse/core'
 import type { Ref } from 'vue'
 import { provide, shallowRef, unref } from 'vue'
 
-import type { StripeContext } from '../types'
+import type { StripeContext } from '../../types'
 import { useRuntimeConfig } from '#imports'
 
 type MaybeRef<T> = T | Ref<T>
