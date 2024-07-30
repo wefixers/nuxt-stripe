@@ -1,11 +1,11 @@
 import type { StripeConstructorOptions } from '@stripe/stripe-js'
 import type { Stripe } from 'stripe'
+import type { Nuxt } from '@nuxt/schema'
 import { addComponentsDir, addImportsDir, addServerImportsDir, createResolver, defineNuxtModule, useLogger } from '@nuxt/kit'
 import { startSubprocess } from '@nuxt/devtools-kit'
 import { joinURL } from 'ufo'
 import defu from 'defu'
 
-import type { Nuxt } from '@nuxt/schema'
 import { name, version } from '../package.json'
 
 declare module '@nuxt/schema' {
