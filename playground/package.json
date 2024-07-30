@@ -8,10 +8,10 @@
     "generate": "nuxi generate"
   },
   "dependencies": {
-    "@t3-oss/env-nuxt": "0.6.0",
     "zod": "^3.20.2"
   },
   "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.12.1",
     "nuxt": "latest"
   }
 }

@@ -1,9 +1,5 @@
-/// <reference types="../../../.nuxt/types/stripe.d.ts" />
-
-import { defineStripeWebhook } from '#stripe'
-
-export default defineStripeWebhook(({ stripeEvent }) => {
-  switch (stripeEvent.type) {
+export default stripeWebhookHandler(async (event) => {
+  switch (event.type) {
     case 'payment_intent.succeeded': {
       //
     }

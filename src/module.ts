@@ -1,16 +1,30 @@
 import type { StripeConstructorOptions } from '@stripe/stripe-js'
-import { addImports, addTemplate, createResolver, defineNuxtModule, findPath, useLogger } from '@nuxt/kit'
+import type { Stripe } from 'stripe'
+import { addComponentsDir, addImportsDir, addServerImportsDir, createResolver, defineNuxtModule, useLogger } from '@nuxt/kit'
 import { startSubprocess } from '@nuxt/devtools-kit'
-import { normalize, relative } from 'pathe'
 import { joinURL } from 'ufo'
 import defu from 'defu'
 
+import type { Nuxt } from '@nuxt/schema'
 import { name, version } from '../package.json'
 
-/**
- * Represents a set of options accessible on runtime with `useRuntimeConfig().public.stripe`.
- */
-export interface ModulePublicRuntimeConfig {
+declare module '@nuxt/schema' {
+  interface RuntimeConfig {
+    /**
+     * The Stripe server runtime options.
+     */
+    stripe: StripeModuleServerOptions
+  }
+
+  interface PublicRuntimeConfig {
+    /**
+     * The Stripe client runtime options.
+     */
+    stripe: StripeModuleClientOptions
+  }
+}
+
+export interface StripeModuleClientOptions {
   /**
    * The Stripe publishable key, it is intended to be exposed to the users.
    * Use `NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` in the `.env` to set this key automatically.
@@ -21,125 +35,246 @@ export interface ModulePublicRuntimeConfig {
 
   /**
    * The Stripe client options.
+   */
+  options: StripeConstructorOptions
+}
+
+export interface StripeModuleServerOptions {
+  /**
+   * The Stripe secret key, it is intended to be kept secret.
+   * Use `NUXT_STRIPE_SECRET` in the `.env` to set this key automatically.
+   *
+   * Check the official doc: {@link https://stripe.com/docs/keys#obtain-api-keys}
+   */
+  secret: string
+
+  /**
+   * The Stripe server options.
+   */
+  options: Stripe.StripeConfig
+
+  /**
+   * The Stripe webhook options.
+   */
+  webhook: {
+    /**
+     * The Stripe webhook secret, it is intended to be kept secret.
+     * Use `NUXT_STRIP_WEBHOOK_SECRET` in the `.env` to set this key automatically.
+     */
+    secret: string
+  }
+}
+
+export interface ModuleOptions {
+  /**
+   * The Stripe publishable key, it is intended to be exposed to the users.
+   * Use `NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` in the `.env` to set this key automatically.
+   *
+   * Check the official doc: {@link https://stripe.com/docs/keys#obtain-api-keys}
+   */
+  publishableKey: string
+
+  /**
+   * The Stripe secret key, it is intended to be kept secret.
+   * Use `NUXT_STRIPE_SECRET` in the `.env` to set this key automatically.
+   *
+   * Check the official doc: {@link https://stripe.com/docs/keys#obtain-api-keys}
+   */
+  secret: string
+
+  /**
+   * The Stripe webhook options.
+   */
+  webhook: Partial<{
+    /**
+     * The Stripe webhook secret, it is intended to be kept secret.
+     * Use `NUXT_STRIP_WEBHOOK_SECRET` in the `.env` to set this key automatically.
+     */
+    secret: string
+
+    /**
+     * The Stripe CLI webhook listener path.
+     * Set to `false` to disable this behavior.
+     *
+     * @default "/api/stripe/webhook"
+     */
+    listener: string | false
+  }>
+
+  /**
+   * The Stripe client options.
    *
    * ### Note:
    * This object is available on the client-side, do not accidentally expose sensitive information.
    */
-  client?: StripeConstructorOptions
-}
+  client: Partial<{
+    /**
+     * The Stripe client options.
+     */
+    options: StripeConstructorOptions
+  }>
 
-export interface ModuleOptions extends ModulePublicRuntimeConfig {
   /**
-   * The path to the stripe webhook, it will be auto-detected and the Stripe CLI will listed for events.
-   * Set to `false` to disable this behavior.
-   *
-   * @default "api/stripe/webhook"
+   * The Stripe server options.
    */
-  webhookPath?: string | false
+  server: Partial<{
+    /**
+     * The Stripe server options.
+     */
+    options: Stripe.StripeConfig
+  }>
 }
 
-export default defineNuxtModule<Partial<ModuleOptions>>({
+export default defineNuxtModule<ModuleOptions>({
   meta: {
     name,
     version,
     configKey: 'stripe',
+    compatibility: {
+      nuxt: '>=3.0.0',
+    },
   },
   defaults: {
     publishableKey: '',
+    secret: '',
+    webhook: {
+      secret: '',
+      listener: '/api/stripe/webhook',
+    },
+    client: {
+      options: {},
+    },
+    server: {
+      options: {},
+    },
   },
   async setup(options, nuxt) {
     const logger = useLogger(name)
 
     logger.info(`\`${name}\` setup...`)
 
+    // Runtime Public Config
     nuxt.options.runtimeConfig.public.stripe = defu(
-      nuxt.options.runtimeConfig.public.stripe as any,
+      nuxt.options.runtimeConfig.public.stripe,
       {
         publishableKey: options.publishableKey,
-        client: options.client,
+        options: options.client.options,
       },
+    )
+
+    // Runtime Config
+    nuxt.options.runtimeConfig.stripe = defu(
+      nuxt.options.runtimeConfig.stripe,
       {
-        // This empty object removes null and undefined
+        secret: options.secret,
+        options: options.server.options,
+        webhook: {
+          secret: options.webhook.secret,
+        },
       },
     )
 
     const resolver = createResolver(import.meta.url)
 
-    addImports([
-      {
-        name: 'useStripe',
-        from: resolver.resolve('./runtime/composables'),
-      },
-    ])
-
-    const serverRuntime = resolver.resolve('./runtime/server/stripe')
-
-    addTemplate({
-      filename: 'types/stripe.d.ts',
-      getContents: () => `// Generated by ${name} ${version}
-declare module '#stripe' {
-  export const defineStripeWebhook: typeof import('${serverRuntime}').defineStripeWebhook
-}
-`,
+    addComponentsDir({
+      path: resolver.resolve('./runtime/components'),
+      pathPrefix: false,
+      prefix: '',
+      global: true,
     })
 
-    nuxt.hook('nitro:config', (nitroConfig) => {
-      nitroConfig.alias = nitroConfig.alias || {}
+    addImportsDir(
+      resolver.resolve('./runtime/composables'),
+    )
 
-      // Inline module runtime in Nitro bundle
-      nitroConfig.externals = defu(
-        typeof nitroConfig.externals === 'object' ? nitroConfig.externals : {},
-        {
-          inline: [resolver.resolve('./runtime')],
-        },
-      )
-
-      nitroConfig.alias['#stripe'] = serverRuntime
-    })
-
-    nuxt.hook('prepare:types', (options) => {
-      options.references.push({
-        path: resolver.resolve(nuxt.options.buildDir, 'types/stripe.d.ts'),
-      })
-    })
+    addServerImportsDir(
+      resolver.resolve('./runtime/server/utils'),
+    )
 
     // run the stripe CLI only in development
-    if (nuxt.options.dev && options.webhookPath !== false) {
-      let stripeWebhookPath = await findPath(options.webhookPath || 'api/stripe/webhook', {
-        cwd: nuxt.options.serverDir,
+    if (nuxt.options.dev && options.webhook.listener !== false) {
+      startStripeWebhookListener(nuxt, options, (event) => {
+        // Just print the test webhook secret
+        // This info is printed in .dev only
+        if (event.startsWith('Your webhook signing secret')) {
+          logger.info.raw(event)
+        }
       })
-
-      if (stripeWebhookPath) {
-        stripeWebhookPath = normalize(relative(nuxt.options.serverDir, stripeWebhookPath))
-        stripeWebhookPath = stripeWebhookPath.split('.')[0]
-      }
-
-      if (stripeWebhookPath) {
-        const port = nuxt.options.devServer.port
-        const webhookPath = joinURL(`localhost:${port}`, stripeWebhookPath!)
-
-        startSubprocess(
-          {
-            command: 'stripe',
-            // stripe listen --forward-to localhost:3000/api/stripe/webhook
-            args: ['listen', '--forward-to', webhookPath],
-          },
-          {
-            id: 'nuxt-stripe-cli',
-            name: 'Stripe CLI',
-            icon: 'simple-icons:stripe',
-          },
-          nuxt,
-        )
-
-        nuxt.hook('devtools:terminal:write', ({ id, data }) => {
-          if (id === 'nuxt-stripe-cli') {
-            logger.info(`> ${data}`)
-          }
-        })
-      }
     }
 
     logger.success(`\`${name}\` setup done`)
   },
 })
+
+interface StripeWebhookEventHandler {
+  (data: string): void
+}
+
+function startStripeWebhookListener(nuxt: Nuxt, options: ModuleOptions, handler?: StripeWebhookEventHandler) {
+  // Stripe CLI want a full URL to the webhook listener
+  const origin = `http://localhost:${nuxt.options.devServer.port}`
+
+  const webhookPath = joinURL(origin, options.webhook.listener || '/api/stripe/webhook')
+
+  // The secret is either provided in the module options or resolved by Nuxt in the runtime config
+  const stripeSecret = options.secret || nuxt.options.runtimeConfig.stripe.secret
+
+  // see: https://docs.stripe.com/cli/listen
+  const { getProcess } = startSubprocess(
+    {
+      command: 'stripe',
+      args: [
+        'listen',
+        '--api-key',
+        stripeSecret,
+        '--forward-to',
+        webhookPath,
+        '--format',
+        'JSON',
+      ],
+    },
+    {
+      id: 'nuxt-stripe-cli',
+      name: 'Stripe CLI',
+      icon: 'simple-icons:stripe',
+    },
+    nuxt,
+  )
+
+  const process = getProcess()
+
+  process.stdout!.on('data', (data) => {
+    // The data might be a buffer, convert it to string
+    data = data.toString()
+
+    // Depending on the buffer size and the platform (Windows \r madness),
+    // we might get multiple lines in a single output
+    const parts: string[] = data
+      .split('\n')
+      .map((part: string) => part.trim())
+      .filter(Boolean)
+
+    for (const data of parts) {
+      if (data.startsWith('{')) {
+        let payload = data
+        try {
+          payload = JSON.parse(data)
+        }
+        catch {
+          //
+        }
+
+        handler?.(payload)
+      }
+    }
+  })
+
+  process.stderr!.on('data', (data) => {
+    // Clean up the webhook signing secret from the logs
+    const ws = data.toString().match(/Your webhook signing secret is (\S+)/)?.[1]
+
+    if (ws) {
+      handler?.(`Your webhook signing secret is \`${ws}\``)
+    }
+  })
+}
