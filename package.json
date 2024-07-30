@@ -45,7 +45,6 @@
     "@stripe/stripe-js": "^4.1.0",
     "@vueuse/core": "^10.11.0",
     "defu": "^6.1.4",
-    "pathe": "^1.1.2",
     "stripe": "^16.5.0",
     "ufo": "^1.5.4"
   },
