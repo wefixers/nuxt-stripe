@@ -17,10 +17,10 @@ export function useStripe(): Stripe {
 
   const { stripe: { secret, options = {} } } = useRuntimeConfig()
 
-  // Use the default fetch API as the HTTP client if it is available
-  if (!options.httpClient && (globalThis as any).fetch) {
-    options.httpClient = Stripe.createFetchHttpClient()
-  }
+  // // Use the default fetch API as the HTTP client if it is available
+  // if (!options.httpClient && (globalThis as any).fetch) {
+  //   options.httpClient = Stripe.createFetchHttpClient()
+  // }
 
   _stripe = new Stripe(secret, options)
 
