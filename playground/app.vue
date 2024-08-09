@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import type { StripeElementsOptions, StripePaymentElementOptions } from '@stripe/stripe-js'
+import type * as Stripe from '@stripe/stripe-js'
+import { StripeElements, StripePaymentElement } from '#components'
 import { useStripe } from '#imports'
 
-const { stripe } = useStripe()
+const stripeUse = useStripe()
+const stripeElements = shallowRef<Stripe.StripeElements>()
 
-const elementsOptions = ref<StripeElementsOptions>({
-  currency: 'usd',
+const elementsOptions = ref<Stripe.StripeElementsOptions>({
+  mode: 'payment',
   amount: 1000,
-  mode: 'subscription',
+  currency: 'usd',
 })
 
-const paymentOptions = ref<StripePaymentElementOptions>({
+const paymentOptions = ref<Stripe.StripePaymentElementOptions>({
   layout: 'accordion',
 })
 
@@ -28,13 +30,36 @@ async function checkout() {
       method: 'POST',
     })
 
-    await stripe.value?.redirectToCheckout({
+    await stripeUse.value?.redirectToCheckout({
       sessionId: session.id,
     })
   }
   finally {
     redirecting.value = false
   }
+}
+
+async function handleSubmit() {
+  const stripe = stripeUse.value
+  const elements = stripeElements.value
+
+  if (!stripe || !elements) {
+    return
+  }
+
+  await elements.submit()
+
+  const { clientSecret, returnUrl } = await $fetch('/api/payment/confirm', {
+    method: 'post',
+  })
+
+  await stripe.confirmPayment({
+    elements,
+    clientSecret,
+    confirmParams: {
+      return_url: returnUrl,
+    },
+  })
 }
 </script>
 
@@ -43,6 +68,7 @@ async function checkout() {
     <div class="mx-auto max-w-screen-md">
       <button
         :disabled="redirecting"
+        type="button"
         class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
         @click="checkout"
       >
@@ -50,9 +76,18 @@ async function checkout() {
       </button>
 
       <div class="py-4">
-        <StripeElements :options="elementsOptions">
-          <StripePaymentElement :options="paymentOptions" />
-        </StripeElements>
+        <form @submit.prevent="handleSubmit">
+          <StripeElements :stripe="stripeUse" :options="elementsOptions" @elements="e => stripeElements = e">
+            <StripePaymentElement :options="paymentOptions" />
+          </StripeElements>
+
+          <button
+            type="submit"
+            class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
+          >
+            Pay
+          </button>
+        </form>
       </div>
     </div>
   </div>
