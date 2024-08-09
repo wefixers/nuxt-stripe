@@ -214,10 +214,11 @@ const emit = defineEmits<{
   (event: 'escape', data: { elementType: T }): void
   (event: 'loaderror', data: { elementType: T, error: StripeError }): void
   (event: 'loaderstart', data: { elementType: T }): void
+  (event: 'error', error: unknown): void
 }>()
 
 interface Ctx {
-  stripe: Ref<Stripe | null>
+  stripe: Ref<Stripe | null | undefined>
   elements: Ref<StripeElements | null>
 }
 
@@ -235,8 +236,8 @@ function destroyElement() {
   try {
     element.value?.destroy()
   }
-  catch {
-    //
+  catch (e) {
+    emit('error', e)
   }
 
   element.value = undefined
@@ -244,8 +245,8 @@ function destroyElement() {
   try {
     elements.value?.getElement(props.type as any)?.destroy()
   }
-  catch {
-    //
+  catch (e) {
+    emit('error', e)
   }
 }
 

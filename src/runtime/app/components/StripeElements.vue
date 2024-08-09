@@ -1,20 +1,32 @@
 <script setup lang="ts">
 import type { Stripe, StripeElements, StripeElementsOptions } from '@stripe/stripe-js'
-import { computed, provide, shallowRef, watch } from 'vue'
+import { provide, shallowRef, watch } from 'vue'
 
 const props = defineProps<{
   stripe: Stripe | null | undefined
-  options?: StripeElementsOptions
+  options?: StripeElementsOptions | null | undefined
 }>()
 
 const emit = defineEmits<{
   (event: 'elements', elements: StripeElements | null): void
+  (event: 'error', error: unknown): void
 }>()
 
-const stripe = computed(() => props.stripe || null)
 const elements = shallowRef<StripeElements | null>(null)
 
-watch(stripe, (stripe) => {
+// Provide a context to child components
+provide('nuxt-stripe-elements', {
+  stripe: props.stripe,
+  elements,
+})
+
+watch(elements, (elements) => {
+  emit('elements', elements)
+}, {
+  immediate: true,
+})
+
+watch(() => props.stripe, (stripe) => {
   if (!stripe) {
     return
   }
@@ -27,22 +39,32 @@ watch(stripe, (stripe) => {
   try {
     elements.value = stripe.elements(props.options as any)
   }
-  catch {
-    // TODO: Emit the error
+  catch (e) {
+    emit('error', e)
   }
 }, {
   immediate: true,
 })
 
-watch(elements, (elements) => {
-  emit('elements', elements)
+watch(() => props.options, (options) => {
+  if (!elements.value) {
+    return
+  }
+
+  // Either `clientSecret` or `mode` are required to create the Stripe Elements instance
+  if (!options || (!options.clientSecret && !options.mode)) {
+    return
+  }
+
+  try {
+    elements.value.update(options)
+  }
+  catch (e) {
+    emit('error', e)
+  }
 }, {
   immediate: true,
-})
-
-provide('nuxt-stripe-elements', {
-  stripe,
-  elements,
+  deep: true,
 })
 </script>
 
