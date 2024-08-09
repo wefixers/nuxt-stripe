@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import type { StripeElements, StripeElementsOptions } from '@stripe/stripe-js'
-import { inject, provide, watch } from 'vue'
-
-import type { StripeContext } from '../../types'
+import type { Stripe, StripeElements, StripeElementsOptions } from '@stripe/stripe-js'
+import { computed, provide, shallowRef, watch } from 'vue'
 
 const props = defineProps<{
+  stripe: Stripe | null | undefined
   options?: StripeElementsOptions
 }>()
 
@@ -12,27 +11,11 @@ const emit = defineEmits<{
   (event: 'elements', elements: StripeElements | null): void
 }>()
 
-const context = inject<StripeContext>('nuxt-stripe-context')
+const stripe = computed(() => props.stripe || null)
+const elements = shallowRef<StripeElements | null>(null)
 
-if (!context) {
-  throw new Error('StripeElements must be used with useStripe() context')
-}
-
-const { stripe, elements } = context
-
-provide('nuxt-stripe-elements', elements)
-
-// This watch() emit back the StripeElements
-// it's intended to be used as convenience way to retrieve the StripeElements instance
-watch(elements, (elements) => {
-  emit('elements', elements || null)
-}, {
-  immediate: true,
-})
-
-function createElements() {
-  // Stripe is not ready yet
-  if (!stripe.value) {
+watch(stripe, (stripe) => {
+  if (!stripe) {
     return
   }
 
@@ -42,29 +25,24 @@ function createElements() {
   }
 
   try {
-    elements.value = stripe.value.elements(props.options as any)
+    elements.value = stripe.elements(props.options as any)
   }
-  catch (e) {
-    console.error(e)
+  catch {
+    // TODO: Emit the error
   }
-}
-
-watch(stripe, () => {
-  createElements()
 }, {
   immediate: true,
 })
 
-watch(() => props.options, (options) => {
-  if (elements.value) {
-    elements.value.update(options || {})
-  }
-  else {
-    createElements()
-  }
+watch(elements, (elements) => {
+  emit('elements', elements)
 }, {
   immediate: true,
-  deep: true,
+})
+
+provide('nuxt-stripe-elements', {
+  stripe,
+  elements,
 })
 </script>
 

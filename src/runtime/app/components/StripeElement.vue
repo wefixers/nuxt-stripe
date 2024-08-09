@@ -3,6 +3,7 @@ import type { Ref } from 'vue'
 import { inject, onBeforeUnmount, shallowRef, watch } from 'vue'
 
 import type {
+  Stripe,
   StripeAddressElement,
   StripeAddressElementChangeEvent,
   StripeAddressElementOptions,
@@ -215,18 +216,37 @@ const emit = defineEmits<{
   (event: 'loaderstart', data: { elementType: T }): void
 }>()
 
-const elements = inject<Ref<StripeElements | undefined>>('nuxt-stripe-elements')!
+interface Ctx {
+  stripe: Ref<Stripe | null>
+  elements: Ref<StripeElements | null>
+}
 
-if (!elements) {
+const ctx = inject<Ctx>('nuxt-stripe-elements')!
+
+if (!ctx) {
   throw new Error('StripeElement must be used within StripeElements')
 }
 
+const elements = ctx.elements
 const element = shallowRef<inferElement<T>>()
 const elementRef = shallowRef<HTMLElement>()
 
 function destroyElement() {
-  element.value?.destroy()
+  try {
+    element.value?.destroy()
+  }
+  catch {
+    //
+  }
+
   element.value = undefined
+
+  try {
+    elements.value?.getElement(props.type as any)?.destroy()
+  }
+  catch {
+    //
+  }
 }
 
 function createElement() {
@@ -262,6 +282,7 @@ watch(elements, (elements) => {
     return
   }
 
+  destroyElement()
   createElement()
 }, {
   immediate: true,
