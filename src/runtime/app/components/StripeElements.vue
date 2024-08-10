@@ -31,13 +31,17 @@ watch(() => props.stripe, (stripe) => {
     return
   }
 
-  // Either `clientSecret` or `mode` are required to create the Stripe Elements instance
-  if (!props.options || (!props.options.clientSecret && !props.options.mode)) {
+  if (!props.options) {
     return
   }
 
   try {
-    elements.value = stripe.elements(props.options as any)
+    if (props.options.clientSecret) {
+      elements.value = stripe.elements(props.options)
+    }
+    else if (props.options.mode) {
+      elements.value = stripe.elements(props.options)
+    }
   }
   catch (e) {
     emit('error', e)
@@ -51,8 +55,7 @@ watch(() => props.options, (options) => {
     return
   }
 
-  // Either `clientSecret` or `mode` are required to create the Stripe Elements instance
-  if (!options || (!options.clientSecret && !options.mode)) {
+  if (!options) {
     return
   }
 
