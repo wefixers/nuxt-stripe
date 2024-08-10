@@ -1,13 +1,13 @@
 import type { Ref } from 'vue'
-import { unref } from 'vue'
-import { computedAsync } from '@vueuse/core'
+import { shallowRef, unref, watch } from 'vue'
+import type { MaybeRef } from '@vueuse/core'
 
 import type { Stripe, StripeConstructorOptions } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js/pure'
 
 import { useRuntimeConfig } from '#imports'
 
-type MaybeRef<T> = T | Ref<T>
+type Optional<T> = MaybeRef<T | null | undefined>
 
 export interface UseStripeOptions extends StripeConstructorOptions {
   /**
@@ -28,21 +28,43 @@ export interface UseStripeOptions extends StripeConstructorOptions {
  * })
  * ```
  */
-export function useStripe(options?: MaybeRef<UseStripeOptions>): Ref<Stripe | null> {
+export function useStripe(options?: Optional<UseStripeOptions>): Ref<Stripe | null> {
   const runtimeConfig = useRuntimeConfig()
 
-  // I really do not like computedAsync but it does the job
-  return computedAsync(() => {
-    const opts = unref(options)
-    const pk = opts?.publishableKey || runtimeConfig.public.stripe?.publishableKey
+  /**
+   * The actual Stripe instance.
+   */
+  const stripe = shallowRef<Stripe | null>(null)
 
-    if (!pk) {
-      return null
+  const stop = watch(() => options, async (optionsRef) => {
+    if (stripe.value) {
+      return
     }
 
-    return loadStripe(pk, {
-      ...runtimeConfig.public.stripe?.options,
-      stripeAccount: opts?.stripeAccount || runtimeConfig.public.stripe?.options?.stripeAccount || undefined,
-    })
+    const options = unref(optionsRef)
+    const publishableKey = options?.publishableKey || runtimeConfig.public.stripe?.publishableKey
+
+    // No publishable key
+    if (!publishableKey) {
+      return
+    }
+
+    try {
+      stripe.value = await loadStripe(publishableKey, {
+        // Merge runtime config options with the provided options
+        ...runtimeConfig.public.stripe?.options,
+        ...options,
+      })
+
+      stop()
+    }
+    catch {
+      //
+    }
+  }, {
+    immediate: true,
+    deep: true,
   })
+
+  return stripe
 }
