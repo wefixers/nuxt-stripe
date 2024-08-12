@@ -345,6 +345,18 @@ watch(() => props.options, (options) => {
 onBeforeUnmount(() => {
   destroyElement()
 })
+
+defineExpose({
+  blur(): void {
+    ;(element.value as StripeElementBase)?.blur?.()
+  },
+  clear(): void {
+    ;(element.value as StripeElementBase)?.clear?.()
+  },
+  focus(): void {
+    ;(element.value as StripeElementBase)?.focus?.()
+  },
+})
 </script>
 
 <template>

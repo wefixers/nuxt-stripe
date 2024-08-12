@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import type { Ref } from 'vue'
+import { defineExpose, inject, provide, shallowRef, watch } from 'vue'
 import type { Stripe, StripeElements, StripeElementsOptions } from '@stripe/stripe-js'
-import { provide, shallowRef, watch } from 'vue'
 
 const props = defineProps<{
-  stripe: Stripe | null | undefined
   options?: StripeElementsOptions | null | undefined
 }>()
 
@@ -12,11 +12,17 @@ const emit = defineEmits<{
   (event: 'error', error: unknown): void
 }>()
 
+const stripe = inject<Ref<Stripe | null>>('nuxt-stripe')
+
+if (!stripe) {
+  throw new Error('StripeElement must be used with useStripe')
+}
+
 const elements = shallowRef<StripeElements | null>(null)
 
 // Provide a context to child components
 provide('nuxt-stripe-elements', {
-  stripe: props.stripe,
+  stripe,
   elements,
 })
 
@@ -26,7 +32,7 @@ watch(elements, (elements) => {
   immediate: true,
 })
 
-watch(() => props.stripe, (stripe) => {
+watch(stripe, (stripe) => {
   if (!stripe) {
     return
   }
@@ -68,6 +74,16 @@ watch(() => props.options, (options) => {
 }, {
   immediate: true,
   deep: true,
+})
+
+defineExpose({
+  fetchUpdates(): Promise<{ error?: { message: string, status?: string } }> {
+    if (!elements.value) {
+      return Promise.resolve({ error: { message: 'Elements not initialized' } })
+    }
+
+    return elements.value.fetchUpdates()
+  },
 })
 </script>
 
