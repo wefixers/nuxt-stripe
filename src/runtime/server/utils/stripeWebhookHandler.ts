@@ -8,14 +8,12 @@ import { createStripeEvent } from './createStripeEvent'
 
 export interface StripeWebhookHandlerContext {
   /**
-   * The event.
+   * The {@link H3Event} event.
    */
   $event: H3Event
 
   /**
-   * The Stripe instance.
-   *
-   * This instance is created only once and recycled throughout the lifespan of the application.
+   * The {@link Stripe} instance.
    */
   stripe: Stripe
 }
