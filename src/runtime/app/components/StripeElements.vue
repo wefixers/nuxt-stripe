@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { Ref } from 'vue'
 import { defineExpose, inject, provide, shallowRef, watch } from 'vue'
-import type { Stripe, StripeElements, StripeElementsOptions } from '@stripe/stripe-js'
+import type { StripeElements, StripeElementsOptions } from '@stripe/stripe-js'
+import type { StripeContext, StripeElementsContext } from '../types'
 
 const props = defineProps<{
   options?: StripeElementsOptions | null | undefined
@@ -12,16 +12,18 @@ const emit = defineEmits<{
   (event: 'error', error: unknown): void
 }>()
 
-const stripe = inject<Ref<Stripe | null>>('nuxt-stripe')
+const ctx = inject<StripeContext>('nuxt-stripe')
 
-if (!stripe) {
+if (!ctx) {
   throw new Error('StripeElement must be used with useStripe')
 }
+
+const { stripe } = ctx
 
 const elements = shallowRef<StripeElements | null>(null)
 
 // Provide a context to child components
-provide('nuxt-stripe-elements', {
+provide<StripeElementsContext>('nuxt-stripe-elements', {
   stripe,
   elements,
 })

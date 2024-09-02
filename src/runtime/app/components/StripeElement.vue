@@ -71,6 +71,7 @@ import type {
   StripeShippingAddressElementChangeEvent,
   StripeShippingAddressElementOptions,
 } from '@stripe/stripe-js'
+import type { StripeElementsContext } from '../types'
 
 // This type map is very useful, we should export it
 interface StripeTypeMap {
@@ -217,18 +218,14 @@ const emit = defineEmits<{
   (event: 'error', error: unknown): void
 }>()
 
-interface Ctx {
-  stripe: Ref<Stripe | null | undefined>
-  elements: Ref<StripeElements | null>
-}
-
-const ctx = inject<Ctx>('nuxt-stripe-elements')!
+const ctx = inject<StripeElementsContext>('nuxt-stripe-elements')
 
 if (!ctx) {
   throw new Error('StripeElement must be used within StripeElements')
 }
 
-const elements = ctx.elements
+const { elements } = ctx
+
 const element = shallowRef<inferElement<T>>()
 const elementRef = shallowRef<HTMLElement>()
 

@@ -5,6 +5,7 @@ import type { MaybeRef } from '@vueuse/core'
 import type { Stripe, StripeConstructorOptions } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js/pure'
 
+import type { StripeContext } from '../types'
 import { useRuntimeConfig } from '#imports'
 
 type Optional<T> = MaybeRef<T | null | undefined>
@@ -67,7 +68,9 @@ export function useStripe(options?: Optional<UseStripeOptions>): Ref<Stripe | nu
   })
 
   // Provide the Stripe instance to children components and composables
-  provide('nuxt-stripe', stripe)
+  provide<StripeContext>('nuxt-stripe', {
+    stripe,
+  })
 
   return stripe
 }
