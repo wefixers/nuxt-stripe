@@ -4,7 +4,7 @@ import { StripeElements, StripePaymentElement } from '#components'
 import { useStripe } from '#imports'
 
 const stripeUse = useStripe()
-const stripeElements = shallowRef<Stripe.StripeElements>()
+const stripeElements = shallowRef<Stripe.StripeElements | null>(null)
 
 const elementsOptions = ref<Stripe.StripeElementsOptions>({
   mode: 'payment',
@@ -77,7 +77,7 @@ async function handleSubmit() {
 
       <div class="py-4">
         <form @submit.prevent="handleSubmit">
-          <StripeElements :stripe="stripeUse" :options="elementsOptions" @elements="e => stripeElements = e">
+          <StripeElements :options="elementsOptions" @elements="e => stripeElements = e">
             <StripePaymentElement :options="paymentOptions" />
           </StripeElements>
 
