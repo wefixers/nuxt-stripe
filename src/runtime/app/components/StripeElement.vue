@@ -1,9 +1,7 @@
 <script setup lang="ts" generic="T extends StripeElementType">
-import type { Ref } from 'vue'
 import { inject, onBeforeUnmount, shallowRef, watch } from 'vue'
 
 import type {
-  Stripe,
   StripeAddressElement,
   StripeAddressElementChangeEvent,
   StripeAddressElementOptions,
@@ -28,7 +26,6 @@ import type {
   StripeCardNumberElementOptions,
   StripeElementBase,
   StripeElementType,
-  StripeElements,
   StripeEpsBankElement,
   StripeEpsBankElementChangeEvent,
   StripeEpsBankElementOptions,
