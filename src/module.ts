@@ -1,12 +1,16 @@
+import { existsSync } from 'node:fs'
+
 import type { StripeConstructorOptions } from '@stripe/stripe-js'
 import type { Stripe } from 'stripe'
 import type { Nuxt } from '@nuxt/schema'
 import { addComponentsDir, addImportsDir, addServerImportsDir, createResolver, defineNuxtModule, useLogger } from '@nuxt/kit'
-import { startSubprocess } from '@nuxt/devtools-kit'
+import { addCustomTab, extendServerRpc, onDevToolsInitialized, startSubprocess } from '@nuxt/devtools-kit'
+import type { BirpcGroup } from 'birpc'
 import { joinURL } from 'ufo'
 import defu from 'defu'
 
 import { name, version } from '../package.json'
+import type { ClientFunctions, ServerFunctions } from './rpc-types'
 
 declare module '@nuxt/schema' {
   interface RuntimeConfig {
@@ -192,14 +196,65 @@ export default defineNuxtModule<ModuleOptions>({
     )
 
     // run the stripe CLI only in development
-    if (nuxt.options.dev && options.webhook.listener !== false) {
-      startStripeWebhookListener(nuxt, options, (event) => {
-        // Just print the test webhook secret
-        // This info is printed in .dev only
-        if (event.startsWith('Your webhook signing secret')) {
-          logger.info.raw(event)
-        }
+    if (nuxt.options.dev) {
+      const stripeEvents: Stripe.Event[] = []
+
+      const DEVTOOLS_UI_ROUTE = '/_stripe'
+      const DEVTOOLS_UI_LOCAL_PORT = 3030
+
+      const clientPath = resolver.resolve('./client')
+
+      if (existsSync(clientPath)) {
+        nuxt.hook('vite:serverCreated', async (server) => {
+          const sirv = await import('sirv').then(r => r.default || r)
+          server.middlewares.use(
+            DEVTOOLS_UI_ROUTE,
+            sirv(clientPath, { dev: true, single: true }),
+          )
+        })
+      }
+      else {
+        nuxt.hook('vite:extendConfig', (config) => {
+          config.server = config.server || {}
+          config.server.proxy = config.server.proxy || {}
+          config.server.proxy[DEVTOOLS_UI_ROUTE] = {
+            target: `http://localhost:${DEVTOOLS_UI_LOCAL_PORT}${DEVTOOLS_UI_ROUTE}`,
+            changeOrigin: true,
+            followRedirects: true,
+            rewrite: path => path.replace(DEVTOOLS_UI_ROUTE, ''),
+          }
+        })
+      }
+
+      let rpc: BirpcGroup<ClientFunctions, ServerFunctions> | undefined
+
+      onDevToolsInitialized(async () => {
+        rpc = extendServerRpc<ClientFunctions, ServerFunctions>('nuxt-stripe-rpc', {
+          getStripeEvents: () => stripeEvents,
+        })
       })
+
+      addCustomTab({
+        name: 'stripe',
+        title: 'Stripe',
+        icon: 'simple-icons:stripe',
+        view: {
+          type: 'iframe',
+          src: DEVTOOLS_UI_ROUTE,
+        },
+      })
+
+      if (options.webhook.listener !== false) {
+        startStripeWebhookListener(nuxt, options, (event) => {
+          if (typeof event === 'string') {
+            logger.info(event)
+          }
+          else {
+            stripeEvents.push(event as Stripe.Event)
+            rpc?.broadcast.stripeEvent(event as Stripe.Event)
+          }
+        })
+      }
     }
 
     logger.success(`\`${name}\` setup done`)
@@ -207,7 +262,7 @@ export default defineNuxtModule<ModuleOptions>({
 })
 
 interface StripeWebhookEventHandler {
-  (data: string): void
+  (data: string | Record<string, any>): void
 }
 
 function startStripeWebhookListener(nuxt: Nuxt, options: ModuleOptions, handler?: StripeWebhookEventHandler) {
@@ -243,38 +298,61 @@ function startStripeWebhookListener(nuxt: Nuxt, options: ModuleOptions, handler?
 
   const process = getProcess()
 
-  process.stdout!.on('data', (data) => {
-    // The data might be a buffer, convert it to string
-    data = data.toString()
+  lineReader(process.stdout!, (line) => {
+    handler?.(
+      tryReadJsonObject(line),
+    )
+  })
 
-    // Depending on the buffer size and the platform (Windows \r madness),
-    // we might get multiple lines in a single output
-    const parts: string[] = data
-      .split('\n')
-      .map((part: string) => part.trim())
-      .filter(Boolean)
+  lineReader(process.stderr!, (line) => {
+    // Clean up the webhook signing secret from the logs
+    const ws = line.match(/Your webhook signing secret is (\S+)/)?.[1]
 
-    for (const data of parts) {
-      if (data.startsWith('{')) {
-        let payload = data
-        try {
-          payload = JSON.parse(data)
+    handler?.(
+      ws
+        ? `Your webhook signing secret is \`${ws}\``
+        : line,
+    )
+  })
+
+  function lineReader(stream: NodeJS.ReadableStream, onLine: (line: string) => void) {
+    let buffer = ''
+
+    stream.on('data', (data) => {
+      buffer += data.toString()
+
+      let i
+
+      // eslint-disable-next-line no-cond-assign
+      while ((i = buffer.search(/\r?\n/)) >= 0) {
+        const line = buffer.substring(0, i).trim()
+        if (line.length > 0) {
+          onLine(line)
         }
-        catch {
-          //
-        }
+        buffer = buffer.substring(i + 1)
+      }
+    })
 
-        handler?.(payload)
+    stream.on('end', () => {
+      if (buffer.length > 0) {
+        const line = buffer.trim()
+        if (line.length > 0) {
+          onLine(line)
+        }
+      }
+    })
+  }
+
+  function tryReadJsonObject(line: string): string | Record<string, any> {
+    if (line.startsWith('{')) {
+      try {
+        return JSON.parse(line)
+      }
+      catch {
+        //
       }
     }
-  })
 
-  process.stderr!.on('data', (data) => {
-    // Clean up the webhook signing secret from the logs
-    const ws = data.toString().match(/Your webhook signing secret is (\S+)/)?.[1]
-
-    if (ws) {
-      handler?.(`Your webhook signing secret is \`${ws}\``)
-    }
-  })
+    return line
+  }
 }
