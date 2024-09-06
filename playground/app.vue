@@ -53,13 +53,21 @@ async function handleSubmit() {
     method: 'post',
   })
 
-  await stripe.confirmPayment({
+  const paymentIntentResult = await stripe.confirmPayment({
     elements,
     clientSecret,
+    redirect: 'if_required',
     confirmParams: {
       return_url: returnUrl,
     },
   })
+
+  if (paymentIntentResult.error) {
+    console.error(paymentIntentResult.error)
+  }
+  else {
+    console.log(paymentIntentResult.paymentIntent)
+  }
 }
 </script>
 
