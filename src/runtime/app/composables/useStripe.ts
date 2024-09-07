@@ -7,6 +7,10 @@ import { loadStripe } from '@stripe/stripe-js/pure'
 import type { StripeContext } from '../types'
 import { useRuntimeConfig } from '#imports'
 
+// import { name, version } from '../../../../package.json' assert { type: 'json' }
+const name = '@fixers/nuxt-stripe'
+const version = '3.0.4'
+
 type MaybeRef<T> = T | Ref<T>
 type Optional<T> = MaybeRef<T | null | undefined>
 
@@ -85,10 +89,25 @@ export function useStripe(options?: Optional<UseStripeOptions>): Ref<Stripe | nu
     }
 
     try {
-      stripe.value = await loadStripe(
+      const stripeInstance = await loadStripe(
         publishableKey,
         options,
       )
+
+      // null is returned on server-side only
+      if (!stripeInstance) {
+        return
+      }
+
+      // Register the app info
+      // This helps Stripe improve their services and debugging
+      stripeInstance.registerAppInfo({
+        name,
+        version,
+        url: 'https://nuxt-stripe.fixers.dev',
+      })
+
+      stripe.value = stripeInstance
     }
     catch {
       //
@@ -103,4 +122,52 @@ export function useStripe(options?: Optional<UseStripeOptions>): Ref<Stripe | nu
   })
 
   return stripe
+
+  // const accessor = () => {
+  //   if (!stripe.value) {
+  //     throw new Error('Stripe instance not initialized')
+  //   }
+
+  //   return stripe.value
+  // }
+
+  // return new Proxy(Object.create(null), {
+  //   get(_, p, receiver) {
+  //     if (p === '$ref') {
+  //       return stripe
+  //     }
+
+  //     return Reflect.get(accessor(), p, receiver)
+  //   },
+  //   set(_, p, value, receiver) {
+  //     return Reflect.set(accessor(), p, value, receiver)
+  //   },
+  //   getOwnPropertyDescriptor(_, p) {
+  //     return Reflect.getOwnPropertyDescriptor(accessor(), p)
+  //   },
+  //   has(_, p) {
+  //     return Reflect.has(accessor(), p)
+  //   },
+  //   ownKeys(_) {
+  //     return Reflect.ownKeys(accessor())
+  //   },
+  //   getPrototypeOf(_) {
+  //     return Reflect.getPrototypeOf(accessor())
+  //   },
+  //   setPrototypeOf(_, v) {
+  //     return Reflect.setPrototypeOf(accessor(), v)
+  //   },
+  //   isExtensible(_) {
+  //     return Reflect.isExtensible(accessor())
+  //   },
+  //   preventExtensions(_) {
+  //     return Reflect.preventExtensions(accessor())
+  //   },
+  //   defineProperty(_, property, attributes) {
+  //     return Reflect.defineProperty(accessor(), property, attributes)
+  //   },
+  //   deleteProperty(_, p) {
+  //     return Reflect.deleteProperty(accessor(), p)
+  //   },
+  // })
 }
