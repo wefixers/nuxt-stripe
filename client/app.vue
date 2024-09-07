@@ -61,7 +61,11 @@ let rpc: BirpcReturn<ServerFunctions, ClientFunctions> | undefined
 onDevtoolsClientConnected(async (client) => {
   rpc = client.devtools.extendClientRpc<ServerFunctions, ClientFunctions>('nuxt-stripe-rpc', {
     stripeEvent(event) {
-      events.value.push(event)
+      // Add new event to the beginning of the list
+      // Do not care too much about unshift performance here
+      // Events are also sorted by created date
+      // That does not matter, put the newest event at the top
+      events.value.unshift(event)
     },
   })
 

@@ -2,8 +2,7 @@ import { existsSync } from 'node:fs'
 
 import type { StripeConstructorOptions } from '@stripe/stripe-js'
 import type { Stripe } from 'stripe'
-import type { Nuxt } from '@nuxt/schema'
-import { addComponentsDir, addImportsDir, addServerImportsDir, createResolver, defineNuxtModule, useLogger } from '@nuxt/kit'
+import { addComponentsDir, addImportsDir, addServerImportsDir, createResolver, defineNuxtModule, useLogger, useNuxt } from '@nuxt/kit'
 import { addCustomTab, extendServerRpc, onDevToolsInitialized, startSubprocess } from '@nuxt/devtools-kit'
 import type { BirpcGroup } from 'birpc'
 import { joinURL } from 'ufo'
@@ -197,8 +196,6 @@ export default defineNuxtModule<ModuleOptions>({
 
     // run the stripe CLI only in development
     if (nuxt.options.dev) {
-      const stripeEvents: Stripe.Event[] = []
-
       const DEVTOOLS_UI_ROUTE = '/_stripe'
       const DEVTOOLS_UI_LOCAL_PORT = 3030
 
@@ -226,14 +223,6 @@ export default defineNuxtModule<ModuleOptions>({
         })
       }
 
-      let rpc: BirpcGroup<ClientFunctions, ServerFunctions> | undefined
-
-      onDevToolsInitialized(async () => {
-        rpc = extendServerRpc<ClientFunctions, ServerFunctions>('nuxt-stripe-rpc', {
-          getStripeEvents: () => stripeEvents,
-        })
-      })
-
       addCustomTab({
         name: 'stripe',
         title: 'Stripe',
@@ -244,15 +233,31 @@ export default defineNuxtModule<ModuleOptions>({
         },
       })
 
+      const stripeEvents: Stripe.Event[] = []
+
+      let rpc: BirpcGroup<ClientFunctions, ServerFunctions> | undefined
+
+      onDevToolsInitialized(async () => {
+        rpc = extendServerRpc<ClientFunctions, ServerFunctions>('nuxt-stripe-rpc', {
+          getStripeEvents: () => stripeEvents,
+        })
+      })
+
       if (options.webhook.listener !== false) {
-        startStripeWebhookListener(nuxt, options, (event) => {
-          if (typeof event === 'string') {
-            logger.info(event)
-          }
-          else {
-            stripeEvents.push(event as Stripe.Event)
-            rpc?.broadcast.stripeEvent(event as Stripe.Event)
-          }
+        startStripeWebhookListener({
+          listener: options.webhook.listener,
+          secret: options.webhook.secret,
+          handler: (event) => {
+            if (typeof event === 'string') {
+              logger.info(event)
+            }
+            else {
+              // unshift to put the newest event at the beginning of the list
+              stripeEvents.unshift(event)
+
+              rpc?.broadcast.stripeEvent(event)
+            }
+          },
         })
       }
     }
@@ -262,21 +267,31 @@ export default defineNuxtModule<ModuleOptions>({
 })
 
 interface StripeWebhookEventHandler {
-  (data: string | Record<string, any>): void
+  (data: string | Stripe.Event): void
 }
 
-function startStripeWebhookListener(nuxt: Nuxt, options: ModuleOptions, handler?: StripeWebhookEventHandler) {
+interface StripeWebhookListenerOptions {
+  listener?: string
+  secret?: string
+  handler?: StripeWebhookEventHandler
+}
+
+function startStripeWebhookListener(options: StripeWebhookListenerOptions) {
+  const { handler } = options
+
+  const nuxt = useNuxt()
+
   // Stripe CLI want a full URL to the webhook listener
   const origin = `http://localhost:${nuxt.options.devServer.port}`
 
-  const webhookPath = joinURL(origin, options.webhook.listener || '/api/stripe/webhook')
+  const webhookPath = joinURL(origin, options.listener || '/api/stripe/webhook')
 
   // The secret is either provided in the module options or resolved by Nuxt in the runtime config
   const stripeSecret = options.secret || nuxt.options.runtimeConfig.stripe.secret
 
-  // see: https://docs.stripe.com/cli/listen
   const { getProcess } = startSubprocess(
     {
+      // see: https://docs.stripe.com/cli/listen
       command: 'stripe',
       args: [
         'listen',
@@ -293,66 +308,64 @@ function startStripeWebhookListener(nuxt: Nuxt, options: ModuleOptions, handler?
       name: 'Stripe CLI',
       icon: 'simple-icons:stripe',
     },
-    nuxt,
   )
 
-  const process = getProcess()
+  if (handler) {
+    const process = getProcess()
 
-  lineReader(process.stdout!, (line) => {
-    handler?.(
-      tryReadJsonObject(line),
-    )
-  })
-
-  lineReader(process.stderr!, (line) => {
-    // Clean up the webhook signing secret from the logs
-    const ws = line.match(/Your webhook signing secret is (\S+)/)?.[1]
-
-    handler?.(
-      ws
-        ? `Your webhook signing secret is \`${ws}\``
-        : line,
-    )
-  })
-
-  function lineReader(stream: NodeJS.ReadableStream, onLine: (line: string) => void) {
-    let buffer = ''
-
-    stream.on('data', (data) => {
-      buffer += data.toString()
-
-      let i
-
-      // eslint-disable-next-line no-cond-assign
-      while ((i = buffer.search(/\r?\n/)) >= 0) {
-        const line = buffer.substring(0, i).trim()
-        if (line.length > 0) {
-          onLine(line)
-        }
-        buffer = buffer.substring(i + 1)
+    lineReader(process.stdout!, (line) => {
+      if (line.startsWith('{')) {
+        handler(JSON.parse(line))
+      }
+      else {
+        handler(line)
       }
     })
 
-    stream.on('end', () => {
-      if (buffer.length > 0) {
-        const line = buffer.trim()
-        if (line.length > 0) {
-          onLine(line)
-        }
-      }
-    })
-  }
+    lineReader(process.stderr!, (line) => {
+      // Clean up the webhook signing secret from the logs
+      const ws = line.match(/Your webhook signing secret is (\S+)/)?.[1]
 
-  function tryReadJsonObject(line: string): string | Record<string, any> {
-    if (line.startsWith('{')) {
-      try {
-        return JSON.parse(line)
-      }
-      catch {
-        //
-      }
+      handler(ws ? `Your webhook signing secret is \`${ws}\`` : line)
+    })
+
+    // Note for the reader:
+    // We have to use a custom line reader as the Node.js readline requires use to pass in a input stream
+    // which we do not have
+    // The implementation is quite naive, trim and skipping empty lines
+    // is just to prevent just from being read/parsed incorrectly
+
+    /**
+     * Provide a way to read a stream line by line.
+     *
+     * Line are trimmed and empty lines are ignored.
+     */
+    function lineReader(stream: NodeJS.ReadableStream, onLine: (line: string) => void) {
+      let buffer = ''
+
+      stream.on('data', (data) => {
+        buffer += data.toString()
+
+        let i
+
+        // eslint-disable-next-line no-cond-assign
+        while ((i = buffer.search(/\r?\n/)) >= 0) {
+          const line = buffer.substring(0, i).trim()
+          if (line.length > 0) {
+            onLine(line)
+          }
+          buffer = buffer.substring(i + 1)
+        }
+      })
+
+      stream.on('end', () => {
+        if (buffer.length > 0) {
+          const line = buffer.trim()
+          if (line.length > 0) {
+            onLine(line)
+          }
+        }
+      })
     }
-
-    return line
   }
 }
