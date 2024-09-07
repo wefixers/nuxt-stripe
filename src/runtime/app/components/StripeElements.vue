@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineExpose, inject, provide, shallowRef, watch } from 'vue'
+import { inject, provide, shallowRef, watch } from 'vue'
 import type { StripeElements, StripeElementsOptions } from '@stripe/stripe-js'
 import type { StripeContext, StripeElementsContext } from '../types'
 
@@ -78,15 +78,15 @@ watch(() => props.options, (options) => {
   deep: true,
 })
 
-defineExpose({
-  fetchUpdates(): Promise<{ error?: { message: string, status?: string } }> {
-    if (!elements.value) {
-      return Promise.resolve({ error: { message: 'Elements not initialized' } })
-    }
+// defineExpose({
+//   fetchUpdates(): Promise<{ error?: { message: string, status?: string } }> {
+//     if (!elements.value) {
+//       return Promise.resolve({ error: { message: 'Elements not initialized' } })
+//     }
 
-    return elements.value.fetchUpdates()
-  },
-})
+//     return elements.value.fetchUpdates()
+//   },
+// })
 </script>
 
 <template>
