@@ -9,7 +9,7 @@ import { useRuntimeConfig } from '#imports'
 
 // import { name, version } from '../../../../package.json' assert { type: 'json' }
 const name = '@fixers/nuxt-stripe'
-const version = '3.0.4'
+const version = '4.0.0'
 
 type MaybeRef<T> = T | Ref<T>
 type Optional<T> = MaybeRef<T | null | undefined>
