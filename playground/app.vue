@@ -3,7 +3,7 @@ import type * as Stripe from '@stripe/stripe-js'
 import { StripeElements, StripePaymentElement } from '#components'
 import { useStripe } from '#imports'
 
-const stripeUse = useStripe()
+const stripe = useStripe()
 const stripeElements = shallowRef<Stripe.StripeElements | null>(null)
 
 const elementsOptions = ref<Stripe.StripeElementsOptions>({
@@ -19,6 +19,10 @@ const paymentOptions = ref<Stripe.StripePaymentElementOptions>({
 const redirecting = ref(false)
 
 async function checkout() {
+  if (!stripe.value) {
+    throw new Error('Stripe is not ready')
+  }
+
   if (redirecting.value) {
     return
   }
@@ -30,7 +34,7 @@ async function checkout() {
       method: 'POST',
     })
 
-    await stripeUse.value?.redirectToCheckout({
+    await stripe.value.redirectToCheckout({
       sessionId: session.id,
     })
   }
@@ -40,20 +44,24 @@ async function checkout() {
 }
 
 async function handleSubmit() {
-  const stripe = stripeUse.value
   const elements = stripeElements.value
 
-  if (!stripe || !elements) {
+  if (!elements) {
     return
   }
 
-  await elements.submit()
+  const elementsSubmitResult = await elements.submit()
+
+  if (elementsSubmitResult.error) {
+    console.error(elementsSubmitResult.error)
+    return
+  }
 
   const { clientSecret, returnUrl } = await $fetch('/api/payment/confirm', {
     method: 'post',
   })
 
-  const paymentIntentResult = await stripe.confirmPayment({
+  const paymentIntentResult = await stripe.value!.confirmPayment({
     elements,
     clientSecret,
     redirect: 'if_required',
@@ -64,10 +72,11 @@ async function handleSubmit() {
 
   if (paymentIntentResult.error) {
     console.error(paymentIntentResult.error)
+    return
   }
-  else {
-    console.log(paymentIntentResult.paymentIntent)
-  }
+
+  // eslint-disable-next-line no-alert
+  alert('Payment successful 🎉🎉🎉')
 }
 </script>
 
