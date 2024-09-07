@@ -1,5 +1,4 @@
 import { resolve } from 'pathe'
-import DevtoolsUIKit from '@nuxt/devtools-ui-kit'
 
 export default defineNuxtConfig({
   ssr: false,
@@ -11,7 +10,7 @@ export default defineNuxtConfig({
   },
 
   modules: [
-    DevtoolsUIKit,
+    '@nuxtjs/tailwindcss',
     'nuxt-shiki',
     'nuxt-icon',
   ],
@@ -20,8 +19,8 @@ export default defineNuxtConfig({
     defaultLang: 'json',
     bundledLangs: ['json'],
 
-    defaultTheme: { light: 'min-light', dark: 'aurora-x' },
-    bundledThemes: ['aurora-x', 'min-light'],
+    defaultTheme: { light: 'catppuccin-latte', dark: 'catppuccin-frappe' },
+    bundledThemes: ['catppuccin-frappe', 'catppuccin-latte'],
   },
 
   nitro: {
