@@ -23,15 +23,6 @@ export interface UseStripeOptions extends StripeConstructorOptions {
 
 /**
  * Use Stripe.
- *
- * ### Example:
- * ```ts
- * const stripe = useStripe()
- *
- * await stripe!.redirectToCheckout({
- *   sessionId: session.id,
- * })
- * ```
  */
 export function useStripe(options?: Optional<UseStripeOptions>): Ref<Stripe | null> {
   const stripeConfig = useRuntimeConfig().public.stripe
@@ -42,7 +33,7 @@ export function useStripe(options?: Optional<UseStripeOptions>): Ref<Stripe | nu
   const stripe = shallowRef<Stripe | null>(null)
 
   /**
-   * // The options to initialize the Stripe instance with.
+   * The options to initialize the Stripe instance with.
    */
   const stripeOptions = computed<UseStripeOptions>(() => {
     const rawOptions = {
@@ -74,7 +65,7 @@ export function useStripe(options?: Optional<UseStripeOptions>): Ref<Stripe | nu
     }-${
       stripeOptions.value.locale || ''
     }-${
-      // Sort the betas to ensure the hash is consistent
+      // Sort any string array to ensure the hash is consistent
       // Copy the array to avoid mutating the original
       stripeOptions.value.betas?.filter(Boolean).map(x => String(x)).sort().join(',') || ''
     }`
@@ -110,7 +101,7 @@ export function useStripe(options?: Optional<UseStripeOptions>): Ref<Stripe | nu
       stripe.value = stripeInstance
     }
     catch {
-      //
+      // TODO: we might want to either log or dont even catch the error
     }
   }, {
     immediate: true,

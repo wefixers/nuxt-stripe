@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Ref } from 'vue'
 import { inject, provide, shallowRef, watch } from 'vue'
 import type { StripeElements, StripeElementsOptions } from '@stripe/stripe-js'
 import type { StripeContext, StripeElementsContext } from '../types'
@@ -20,7 +21,8 @@ if (!ctx) {
 
 const { stripe } = ctx
 
-const elements = shallowRef<StripeElements | null>(null)
+const elementsCtx = inject<{ elements: Ref<StripeElements | null> }>('nuxt-stripe-elements')
+const elements = elementsCtx ? elementsCtx.elements : shallowRef<StripeElements | null>(null)
 
 // Provide a context to child components
 provide<StripeElementsContext>('nuxt-stripe-elements', {

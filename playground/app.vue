@@ -4,7 +4,7 @@ import { StripeElements, StripePaymentElement } from '#components'
 import { useStripe } from '#imports'
 
 const stripe = useStripe()
-const stripeElements = shallowRef<Stripe.StripeElements | null>(null)
+const elements = useStripeElements()
 
 const elementsOptions = ref<Stripe.StripeElementsOptions>({
   mode: 'payment',
@@ -44,13 +44,11 @@ async function checkout() {
 }
 
 async function handleSubmit() {
-  const elements = stripeElements.value
-
-  if (!elements) {
+  if (!stripe.value || !elements.value) {
     return
   }
 
-  const elementsSubmitResult = await elements.submit()
+  const elementsSubmitResult = await elements.value.submit()
 
   if (elementsSubmitResult.error) {
     console.error(elementsSubmitResult.error)
@@ -61,8 +59,8 @@ async function handleSubmit() {
     method: 'post',
   })
 
-  const paymentIntentResult = await stripe.value!.confirmPayment({
-    elements,
+  const paymentIntentResult = await stripe.value.confirmPayment({
+    elements: elements.value,
     clientSecret,
     redirect: 'if_required',
     confirmParams: {
@@ -94,7 +92,7 @@ async function handleSubmit() {
 
       <div class="py-4">
         <form @submit.prevent="handleSubmit">
-          <StripeElements :options="elementsOptions" @elements="e => stripeElements = e">
+          <StripeElements :options="elementsOptions">
             <StripePaymentElement :options="paymentOptions" />
           </StripeElements>
 
