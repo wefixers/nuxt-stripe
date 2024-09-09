@@ -22,6 +22,7 @@
 
 .shiki {
   width: fit-content;
+  min-width: 100%;
 }
 
 html.dark .shiki,
