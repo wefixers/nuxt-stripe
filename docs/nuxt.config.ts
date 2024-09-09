@@ -4,47 +4,52 @@ export default defineNuxtConfig({
 
   modules: [
     '@nuxt/content',
+    '@nuxt/eslint',
+    '@nuxt/fonts',
+    '@nuxt/image',
     '@nuxt/ui',
-    '@nuxthq/studio',
-    '@nuxtjs/fontaine',
-    '@nuxtjs/google-fonts',
-    'nuxt-og-image',
+    // '@nuxthq/studio',
+    'nuxt-og-image'
   ],
 
   hooks: {
     // Define `@nuxt/ui` components as global to use them in `.md` (feel free to add those you need)
     'components:extend': (components) => {
-      const globals = components.filter(c => ['UButton'].includes(c.pascalName))
+      const globals = components.filter(c => ['UButton', 'UIcon'].includes(c.pascalName))
 
       globals.forEach(c => c.global = true)
-    },
+    }
   },
 
-  ui: {
-    icons: ['heroicons', 'simple-icons'],
-  },
-
-  // Fonts
-  fontMetrics: {
-    fonts: ['DM Sans'],
-  },
-
-  googleFonts: {
-    display: 'swap',
-    download: true,
-    families: {
-      'DM+Sans': [400, 500, 600, 700],
-    },
+  colorMode: {
+    disableTransition: true
   },
 
   routeRules: {
-    '/api/search.json': { prerender: true },
+    '/': { prerender: true },
+    '/api/search.json': { prerender: true }
   },
 
-  // Devtools / Typescript
-  devtools: { enabled: true },
+  devtools: {
+    enabled: true
+  },
 
-  typescript: { strict: false },
+  typescript: {
+    strict: false
+  },
 
-  compatibilityDate: '2024-07-16',
+  future: {
+    compatibilityVersion: 4
+  },
+
+  eslint: {
+    config: {
+      stylistic: {
+        commaDangle: 'never',
+        braceStyle: '1tbs'
+      }
+    }
+  },
+
+  compatibilityDate: '2024-07-11'
 })

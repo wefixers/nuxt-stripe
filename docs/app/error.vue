@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import type { ParsedContent } from '@nuxt/content/dist/runtime/types'
+import type { ParsedContent } from '@nuxt/content'
 import type { NuxtError } from '#app'
 
-defineProps<{
-  error: NuxtError
-}>()
+defineProps({
+  error: {
+    type: Object as PropType<NuxtError>,
+    required: true
+  }
+})
 
 useSeoMeta({
   title: 'Page not found',
@@ -28,7 +31,7 @@ provide('navigation', navigation)
 
 <template>
   <div>
-    <Header />
+    <AppHeader />
 
     <UMain>
       <UContainer>
@@ -38,10 +41,13 @@ provide('navigation', navigation)
       </UContainer>
     </UMain>
 
-    <Footer />
+    <AppFooter />
 
     <ClientOnly>
-      <LazyUDocsSearch :files="files" :navigation="navigation" />
+      <LazyUDocsSearch
+        :files="files"
+        :navigation="navigation"
+      />
     </ClientOnly>
 
     <UNotifications />

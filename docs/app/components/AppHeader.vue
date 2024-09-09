@@ -1,30 +1,39 @@
 <script setup lang="ts">
-import type { NavItem } from '@nuxt/content/dist/runtime/types'
+import type { NavItem } from '@nuxt/content'
 
 const navigation = inject<NavItem[]>('navigation', [])
 
 const { header } = useAppConfig()
-
-const links = [{
-  label: 'Documentation',
-  icon: 'i-heroicons-book-open-solid',
-  to: '/get-started/installation',
-}]
 </script>
 
 <template>
-  <UHeader :links="links">
+  <UHeader>
     <template #logo>
       <template v-if="header?.logo?.dark || header?.logo?.light">
         <UColorModeImage v-bind="{ class: 'h-6 w-auto', ...header?.logo }" />
       </template>
       <template v-else>
-        Nuxt Stripe <UBadge label="Docs" variant="subtle" class="mb-0.5" />
+        Nuxt UI Pro <UBadge
+          label="Docs"
+          variant="subtle"
+          class="mb-0.5"
+        />
       </template>
     </template>
 
+    <template
+      v-if="header?.search"
+      #center
+    >
+      <UContentSearchButton class="hidden lg:flex" />
+    </template>
+
     <template #right>
-      <UDocsSearchButton v-if="header?.search" :label="null" class="lg:hidden" />
+      <UContentSearchButton
+        v-if="header?.search"
+        :label="null"
+        class="lg:hidden"
+      />
 
       <UColorModeButton v-if="header?.colorMode" />
 

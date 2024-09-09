@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ParsedContent } from '@nuxt/content/dist/runtime/types'
+import type { ParsedContent } from '@nuxt/content'
 
 const { seo } = useAppConfig()
 
@@ -22,6 +22,7 @@ useHead({
 })
 
 useSeoMeta({
+  titleTemplate: `%s - ${seo?.siteName}`,
   ogSiteName: seo?.siteName,
   twitterCard: 'summary_large_image',
 })
@@ -31,7 +32,9 @@ provide('navigation', navigation)
 
 <template>
   <div>
-    <Header />
+    <NuxtLoadingIndicator />
+
+    <AppHeader />
 
     <UMain>
       <NuxtLayout>
@@ -39,10 +42,13 @@ provide('navigation', navigation)
       </NuxtLayout>
     </UMain>
 
-    <Footer />
+    <AppFooter />
 
     <ClientOnly>
-      <LazyUDocsSearch :files="files" :navigation="navigation" />
+      <LazyUDocsSearch
+        :files="files"
+        :navigation="navigation"
+      />
     </ClientOnly>
 
     <UNotifications />

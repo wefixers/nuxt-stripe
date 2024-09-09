@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { NavItem } from '@nuxt/content/dist/runtime/types'
+import type { NavItem } from '@nuxt/content'
 
 const navigation = inject<Ref<NavItem[]>>('navigation')
 </script>
@@ -10,7 +10,7 @@ const navigation = inject<Ref<NavItem[]>>('navigation')
       <template #left>
         <UAside>
           <template #top>
-            <UDocsSearchButton size="md" />
+            <UContentSearchButton size="md" />
           </template>
 
           <UNavigationTree :links="mapContentNavigation(navigation)" />
