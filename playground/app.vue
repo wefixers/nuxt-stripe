@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import type * as Stripe from '@stripe/stripe-js'
-import { StripeElements, StripePaymentElement } from '#components'
-import { useStripe } from '#imports'
 
 const stripe = useStripe()
 const elements = useStripeElements()
@@ -13,7 +11,7 @@ const elementsOptions = ref<Stripe.StripeElementsOptions>({
 })
 
 const paymentOptions = ref<Stripe.StripePaymentElementOptions>({
-  layout: 'accordion',
+  layout: 'tabs',
 })
 
 const redirecting = ref(false)
@@ -45,7 +43,7 @@ async function checkout() {
 
 async function handleSubmit() {
   if (!stripe.value || !elements.value) {
-    return
+    throw new Error('Stripe is not ready')
   }
 
   const elementsSubmitResult = await elements.value.submit()
@@ -84,24 +82,26 @@ async function handleSubmit() {
       <button
         :disabled="redirecting"
         type="button"
-        class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
+        class="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
         @click="checkout"
       >
         External to Checkout
       </button>
 
-      <div class="py-4">
+      <div class="mt-4">
         <form @submit.prevent="handleSubmit">
           <StripeElements :options="elementsOptions">
             <StripePaymentElement :options="paymentOptions" />
           </StripeElements>
 
-          <button
-            type="submit"
-            class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
-          >
-            Pay
-          </button>
+          <div class="flex justify-end mt-4">
+            <button
+              type="submit"
+              class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
+            >
+              Pay
+            </button>
+          </div>
         </form>
       </div>
     </div>
