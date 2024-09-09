@@ -1,15 +1,13 @@
 import { eventHandler } from 'h3'
-import Stripe from 'stripe'
 
-import { env } from '../../env'
+const stripe = useStripe()
 
-export default eventHandler(async () => {
-  const stripe = new Stripe(env.STRIPE_CLIENT_SECRET, {
-    apiVersion: '2023-10-16',
-  })
+export default eventHandler(async (event) => {
+  const returnUrl = String(new URL('/', getRequestURL(event, { xForwardedHost: true })))
 
   const session = await stripe.checkout.sessions.create({
-    locale: 'it',
+    success_url: returnUrl,
+    locale: 'en',
     customer_email: 'test@email.com',
     payment_intent_data: {
       receipt_email: 'test@email.com',
@@ -27,7 +25,6 @@ export default eventHandler(async () => {
         },
       },
     ],
-    success_url: 'http://localhost:3000/',
   })
 
   return session
