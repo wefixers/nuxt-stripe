@@ -1,4 +1,4 @@
-import type { Stripe } from 'stripe'
+import  { Stripe } from 'stripe'
 import type { H3Event } from 'h3'
 import { getHeader, readRawBody } from 'h3'
 
@@ -37,10 +37,21 @@ export async function createStripeEvent(event: H3Event, options?: CreateStripeEv
   // Read the raw body
   const payload = await readRawBody(event, 'utf-8')
 
+  if(!globalThis.crypto) {
+    // Construct the event
+    return stripe.webhooks.constructEvent(
+      payload!,
+      signature!,
+      webhookSecret,
+    )
+  }
+
   // Construct the event
-  return stripe.webhooks.constructEvent(
+  return stripe.webhooks.constructEventAsync(
     payload!,
     signature!,
     webhookSecret,
+    undefined,
+    Stripe.createSubtleCryptoProvider(),
   )
 }
