@@ -3,26 +3,26 @@ import { resolve } from 'pathe'
 import { rollup as unwasm } from 'unwasm/plugin'
 
 export default defineNuxtConfig({
-  ssr: false,
-
-  compatibilityDate: '2024-09-02',
-
-  experimental: {
-    componentIslands: true,
-  },
 
   modules: [
     '@nuxtjs/tailwindcss',
     'nuxt-shiki',
   ],
+  ssr: false,
 
-  shiki: {
-    defaultLang: 'json',
-    bundledLangs: ['json'],
-
-    defaultTheme: { light: 'catppuccin-latte', dark: 'catppuccin-frappe' },
-    bundledThemes: ['catppuccin-frappe', 'catppuccin-latte'],
+  devtools: {
+    enabled: false,
   },
+
+  app: {
+    baseURL: '/_stripe',
+  },
+
+  experimental: {
+    componentIslands: true,
+  },
+
+  compatibilityDate: '2024-09-02',
 
   nitro: {
     prerender: {
@@ -47,11 +47,11 @@ export default defineNuxtConfig({
     plugins: import.meta.env.NODE_ENV === 'production' ? [unwasm({})] : undefined,
   },
 
-  app: {
-    baseURL: '/_stripe',
-  },
+  shiki: {
+    defaultLang: 'json',
+    bundledLangs: ['json'],
 
-  devtools: {
-    enabled: false,
+    defaultTheme: { light: 'catppuccin-latte', dark: 'catppuccin-frappe' },
+    bundledThemes: ['catppuccin-frappe', 'catppuccin-latte'],
   },
 })

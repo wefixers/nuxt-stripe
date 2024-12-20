@@ -1,10 +1,13 @@
 export default defineNuxtConfig({
-  compatibilityDate: '2024-09-02',
 
   modules: [
     '../src/module',
     '@nuxtjs/tailwindcss',
   ],
+
+  devtools: {
+    enabled: true,
+  },
 
   app: {
     head: {
@@ -14,7 +17,5 @@ export default defineNuxtConfig({
     },
   },
 
-  devtools: {
-    enabled: true,
-  },
+  compatibilityDate: '2024-09-02',
 })

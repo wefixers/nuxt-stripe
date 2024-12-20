@@ -348,7 +348,6 @@ function startStripeWebhookListener(options: StripeWebhookListenerOptions) {
 
         let i
 
-        // eslint-disable-next-line no-cond-assign
         while ((i = buffer.search(/\r?\n/)) >= 0) {
           const line = buffer.substring(0, i).trim()
           if (line.length > 0) {

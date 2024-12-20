@@ -5,8 +5,8 @@ import type { NuxtError } from '#app'
 defineProps({
   error: {
     type: Object as PropType<NuxtError>,
-    required: true
-  }
+    required: true,
+  },
 })
 
 useSeoMeta({

@@ -98,11 +98,25 @@ const tabs = [
   <div class="flex flex-col h-full">
     <div>
       <nav class="flex border-b border-black/10 dark:border-white/10">
-        <ul role="list" class="flex flex-none min-w-full px-2 text-sm font-bold leading-6 text-gray-400 gap-x-6">
-          <li v-for="tab in tabs" :key="tab.name">
-            <a :href="tab.href" class="relative block py-3" :class="tab.current ? 'text-indigo-400' : ''">
+        <ul
+          role="list"
+          class="flex flex-none min-w-full px-2 text-sm font-bold leading-6 text-gray-400 gap-x-6"
+        >
+          <li
+            v-for="tab in tabs"
+            :key="tab.name"
+          >
+            <a
+              :href="tab.href"
+              class="relative block py-3"
+              :class="tab.current ? 'text-indigo-400' : ''"
+            >
               <span>{{ tab.name }}</span>
-              <span aria-hidden="true" class="absolute inset-x-0 h-px -bottom-px" :class="[tab.current ? 'bg-indigo-500' : 'bg-transparent']" />
+              <span
+                aria-hidden="true"
+                class="absolute inset-x-0 h-px -bottom-px"
+                :class="[tab.current ? 'bg-indigo-500' : 'bg-transparent']"
+              />
             </a>
           </li>
         </ul>
@@ -112,11 +126,28 @@ const tabs = [
     <div class="p-2 border-b border-black/10 dark:border-white/10">
       <div class="relative rounded-md shadow-sm">
         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="text-gray-400 size-5" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="text-gray-400 size-5"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+            />
           </svg>
         </div>
-        <input v-model="filter" type="text" class="bg-transparent block w-full rounded-md border-0 py-1.5 pl-10 ring-1 ring-inset ring-gray-300 dark:ring-neutral-700 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="Find Event by ID...">
+        <input
+          v-model="filter"
+          type="text"
+          class="bg-transparent block w-full rounded-md border-0 py-1.5 pl-10 ring-1 ring-inset ring-gray-300 dark:ring-neutral-700 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          placeholder="Find Event by ID..."
+        >
       </div>
     </div>
 
@@ -129,7 +160,10 @@ const tabs = [
                 {{ latestEventDate }}
               </span>
               <div>
-                <button class="text-sm text-indigo-500" @click="refresh">
+                <button
+                  class="text-sm text-indigo-500"
+                  @click="refresh"
+                >
                   Refresh
                 </button>
               </div>
@@ -137,7 +171,8 @@ const tabs = [
 
             <div class="mt-2 space-y-px">
               <div
-                v-for="event in filteredEvents" :key="event.id"
+                v-for="event in filteredEvents"
+                :key="event.id"
                 class="flex p-2 border rounded-lg"
                 :class="selectedEventId === event.id ? 'border-indigo-500 cursor-default' : 'border-transparent cursor-pointer hover:bg-gray-400/10 dark:hover:bg-gray-300/10'"
                 @click="selectedEventId = event.id"
@@ -157,7 +192,10 @@ const tabs = [
 
         <div class="relative">
           <div class="absolute inset-0 overflow-x-hidden overflow-y-auto">
-            <div v-if="selectedEvent" class="flex flex-col p-2 size-full">
+            <div
+              v-if="selectedEvent"
+              class="flex flex-col p-2 size-full"
+            >
               <div>
                 <div>
                   <span>Event details</span>

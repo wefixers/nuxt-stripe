@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-stripe-docs",
+  "name": "@fixers/nuxt-stripe-docs",
   "type": "module",
   "private": true,
   "scripts": {

@@ -71,7 +71,6 @@ async function handleSubmit() {
     return
   }
 
-  // eslint-disable-next-line no-alert
   alert('Payment successful 🎉🎉🎉')
 }
 </script>

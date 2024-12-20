@@ -48,7 +48,10 @@ function copyEventId() {
       <div class="grid grid-cols-5">
         <div>Origin Date</div>
         <div class="col-start-2 col-span-full">
-          <button type="button" class="inline cursor-default select-text">
+          <button
+            type="button"
+            class="inline cursor-default select-text"
+          >
             {{ originDate }}
           </button>
         </div>
@@ -57,7 +60,10 @@ function copyEventId() {
       <div class="grid grid-cols-5">
         <div>API version</div>
         <div class="col-start-2 col-span-full">
-          <button type="button" class="inline cursor-default select-text">
+          <button
+            type="button"
+            class="inline cursor-default select-text"
+          >
             {{ event.api_version }}
           </button>
         </div>

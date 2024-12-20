@@ -40,7 +40,7 @@ export interface StripeWebhookHandler {
  * ```
  */
 export function stripeWebhookHandler(handler: StripeWebhookHandler) {
-  return eventHandler<any>(async (e) => {
+  return eventHandler(async (e) => {
     assertMethod(e, ['POST', 'PUT', 'PATCH', 'DELETE'])
 
     const stripe = useStripe()

@@ -27,7 +27,10 @@ const { copy } = useCopyToClipboard()
 <template>
   <div>
     <span class="gradient" />
-    <ULandingHero v-if="page.hero" v-bind="page.hero">
+    <ULandingHero
+      v-if="page.hero"
+      v-bind="page.hero"
+    >
       <Illustration class="hidden lg:block h-64 w-full" />
 
       <template #title>
@@ -35,16 +38,32 @@ const { copy } = useCopyToClipboard()
       </template>
 
       <template #links>
-        <UButton to="/get-started/installation" icon="i-heroicons-rocket-launch" size="xl">
+        <UButton
+          to="/get-started/installation"
+          icon="i-heroicons-rocket-launch"
+          size="xl"
+        >
           Get started
         </UButton>
-        <UInput aria-label="Copy code to get started" :model-value="source" name="get-started" disabled autocomplete="off" size="xl" :ui="{ base: 'disabled:cursor-default', icon: { trailing: { pointer: '' } } }">
+        <UInput
+          aria-label="Copy code to get started"
+          :model-value="source"
+          name="get-started"
+          disabled
+          autocomplete="off"
+          size="xl"
+          :ui="{ base: 'disabled:cursor-default', icon: { trailing: { pointer: '' } } }"
+        >
           <template #leading>
             <UIcon name="i-heroicons-chevron-right" />
           </template>
           <template #trailing>
             <UButton
-              aria-label="Copy Code" color="gray" variant="ghost" :padded="false" icon="i-heroicons-clipboard-document"
+              aria-label="Copy Code"
+              color="gray"
+              variant="ghost"
+              :padded="false"
+              icon="i-heroicons-clipboard-document"
               @click="copy(source, {
                 title: '🎉 Here you go!',
                 description: 'You\'ve copied the code to install Nuxt Stripe, now head over the doc to get started!',
@@ -55,9 +74,16 @@ const { copy } = useCopyToClipboard()
       </template>
     </ULandingHero>
 
-    <ULandingSection :title="page.features.title" :links="page.features.links">
+    <ULandingSection
+      :title="page.features.title"
+      :links="page.features.links"
+    >
       <UPageGrid>
-        <ULandingCard v-for="(item, index) of page.features.items" :key="index" v-bind="item" />
+        <ULandingCard
+          v-for="(item, index) of page.features.items"
+          :key="index"
+          v-bind="item"
+        />
       </UPageGrid>
     </ULandingSection>
   </div>
