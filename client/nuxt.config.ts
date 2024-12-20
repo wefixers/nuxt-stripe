@@ -1,5 +1,7 @@
 import { resolve } from 'pathe'
 
+import { rollup as unwasm } from 'unwasm/plugin'
+
 export default defineNuxtConfig({
   ssr: false,
 
@@ -12,7 +14,6 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss',
     'nuxt-shiki',
-    'nuxt-icon',
   ],
 
   shiki: {
@@ -29,9 +30,21 @@ export default defineNuxtConfig({
         '/',
       ],
     },
+
     output: {
       publicDir: resolve(__dirname, '../dist/client'),
     },
+
+    experimental: {
+      wasm: true,
+    },
+    externals: {
+      traceInclude: ['shiki/dist/core.mjs'],
+    },
+  },
+
+  vite: {
+    plugins: import.meta.env.NODE_ENV === 'production' ? [unwasm({})] : undefined,
   },
 
   app: {
