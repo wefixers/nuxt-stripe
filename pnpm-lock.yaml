@@ -14,8 +14,11 @@ importers:
       '@nuxt/kit':
         specifier: ^3.14.1592
         version: 3.14.1592(magicast@0.3.5)(rollup@3.29.5)
+      '@stripe/connect-js':
+        specifier: '>=3.3.0'
+        version: 3.3.19
       '@stripe/stripe-js':
-        specifier: ^5.4.0
+        specifier: '>=5.4.0'
         version: 5.4.0
       defu:
         specifier: ^6.1.4
@@ -24,7 +27,7 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       stripe:
-        specifier: ^17.5.0
+        specifier: '>=17.5.0'
         version: 17.5.0
       ufo:
         specifier: ^1.5.4
@@ -48,9 +51,6 @@ importers:
       '@nuxt/test-utils':
         specifier: ^3.15.1
         version: 3.15.1(@types/node@22.10.2)(magicast@0.3.5)(playwright-core@1.49.1)(rollup@3.29.5)(sass@1.83.0)(terser@5.37.0)(typescript@5.6.3)(vitest@2.1.8(@types/node@22.10.2)(sass@1.83.0)(terser@5.37.0))
-      '@tailwindcss/forms':
-        specifier: ^0.5.9
-        version: 0.5.9(tailwindcss@3.4.17)
       '@types/node':
         specifier: ^22.10.2
         version: 22.10.2
@@ -91,6 +91,9 @@ importers:
       '@nuxtjs/tailwindcss':
         specifier: ^6.12.2
         version: 6.12.2(magicast@0.3.5)(rollup@4.28.1)
+      '@tailwindcss/forms':
+        specifier: ^0.5.9
+        version: 0.5.9(tailwindcss@3.4.17)
       nuxt:
         specifier: ^3.14.1592
         version: 3.14.1592(@parcel/watcher@2.5.0)(@types/node@22.10.2)(db0@0.2.1)(encoding@0.1.13)(eslint@9.17.0(jiti@2.4.2))(ioredis@5.4.2)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.28.1)(sass@1.83.0)(terser@5.37.0)(typescript@5.7.2)(vite@5.4.11(@types/node@22.10.2)(sass@1.83.0)(terser@5.37.0))(vue-tsc@2.1.10(typescript@5.7.2))
@@ -1726,6 +1729,10 @@ packages:
 
   '@socket.io/component-emitter@3.1.2':
     resolution: {integrity: sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==}
+
+  '@stripe/connect-js@3.3.19':
+    resolution: {integrity: sha512-nb5XUcnnpS6zycqePUQG+JrIANJ8fz1RoWhQUZYXCa2MNkpu8+3c6RDdZaVAmNS67HL/VjoahZplxmFO2Yh/9w==}
+    deprecated: this package has been deprecated
 
   '@stripe/stripe-js@5.4.0':
     resolution: {integrity: sha512-3tfMbSvLGB+OsJ2MsjWjWo+7sp29dwx+3+9kG/TEnZQJt+EwbF/Nomm43cSK+6oXZA9uhspgyrB+BbrPRumx4g==}
@@ -8491,6 +8498,8 @@ snapshots:
   '@sindresorhus/merge-streams@4.0.0': {}
 
   '@socket.io/component-emitter@3.1.2': {}
+
+  '@stripe/connect-js@3.3.19': {}
 
   '@stripe/stripe-js@5.4.0': {}
 

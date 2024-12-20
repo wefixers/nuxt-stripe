@@ -1,9 +1,7 @@
 import type { Stripe, StripeConstructorOptions } from '@stripe/stripe-js'
 import type { Ref } from 'vue'
-
 import type { StripeContext } from '../types'
 import { useRuntimeConfig } from '#imports'
-
 import { loadStripe } from '@stripe/stripe-js/pure'
 import { computed, provide, shallowRef, toRaw, unref, watch } from 'vue'
 

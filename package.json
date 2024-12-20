@@ -41,10 +41,11 @@
   "dependencies": {
     "@nuxt/devtools-kit": "^1.6.4",
     "@nuxt/kit": "^3.14.1592",
-    "@stripe/stripe-js": "^5.4.0",
+    "@stripe/connect-js": ">=3.3.0",
+    "@stripe/stripe-js": ">=5.4.0",
     "defu": "^6.1.4",
     "sirv": "^3.0.0",
-    "stripe": "^17.5.0",
+    "stripe": ">=17.5.0",
     "ufo": "^1.5.4"
   },
   "devDependencies": {
