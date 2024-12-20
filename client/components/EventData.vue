@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useClipboard } from '@vueuse/core'
 import type { Stripe } from 'stripe'
+import { useClipboard } from '@vueuse/core'
 
 const props = defineProps<{
   event: Stripe.Event

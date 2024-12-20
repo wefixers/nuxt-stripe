@@ -1,5 +1,5 @@
-import Stripe from 'stripe'
 import { useRuntimeConfig } from '#imports'
+import Stripe from 'stripe'
 
 let _stripe: Stripe | undefined
 

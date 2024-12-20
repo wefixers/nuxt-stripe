@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { Ref } from 'vue'
-import { inject, provide, shallowRef, watch } from 'vue'
 import type { StripeElements, StripeElementsOptions } from '@stripe/stripe-js'
+import type { Ref } from 'vue'
 import type { StripeContext, StripeElementsContext } from '../types'
+import { inject, provide, shallowRef, watch } from 'vue'
 
 const props = defineProps<{
   options?: StripeElementsOptions | null | undefined

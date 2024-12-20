@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { watchImmediate } from '@vueuse/core'
 import type { BirpcReturn } from 'birpc'
 import type { Stripe } from 'stripe'
-import { onDevtoolsClientConnected } from '@nuxt/devtools-kit/iframe-client'
 import type { ClientFunctions, ServerFunctions } from '../src/rpc-types'
+import { onDevtoolsClientConnected } from '@nuxt/devtools-kit/iframe-client'
+import { watchImmediate } from '@vueuse/core'
 
 const events = ref<Stripe.Event[]>([])
 

@@ -1,15 +1,15 @@
-import { existsSync } from 'node:fs'
-
 import type { StripeConstructorOptions } from '@stripe/stripe-js'
-import type { Stripe } from 'stripe'
-import { addComponentsDir, addImportsDir, addServerImportsDir, createResolver, defineNuxtModule, useLogger, useNuxt } from '@nuxt/kit'
-import { addCustomTab, extendServerRpc, onDevToolsInitialized, startSubprocess } from '@nuxt/devtools-kit'
+
 import type { BirpcGroup } from 'birpc'
-import { joinURL } from 'ufo'
+import type { Stripe } from 'stripe'
+import type { ClientFunctions, ServerFunctions } from './rpc-types'
+import { existsSync } from 'node:fs'
+import { addCustomTab, extendServerRpc, onDevToolsInitialized, startSubprocess } from '@nuxt/devtools-kit'
+import { addComponentsDir, addImportsDir, addServerImportsDir, createResolver, defineNuxtModule, useLogger, useNuxt } from '@nuxt/kit'
 import defu from 'defu'
 
+import { joinURL } from 'ufo'
 import { name, version } from '../package.json'
-import type { ClientFunctions, ServerFunctions } from './rpc-types'
 
 declare module '@nuxt/schema' {
   interface RuntimeConfig {

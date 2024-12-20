@@ -1,11 +1,11 @@
-import type { Ref } from 'vue'
-import { computed, provide, shallowRef, toRaw, unref, watch } from 'vue'
-
 import type { Stripe, StripeConstructorOptions } from '@stripe/stripe-js'
-import { loadStripe } from '@stripe/stripe-js/pure'
+import type { Ref } from 'vue'
 
 import type { StripeContext } from '../types'
 import { useRuntimeConfig } from '#imports'
+
+import { loadStripe } from '@stripe/stripe-js/pure'
+import { computed, provide, shallowRef, toRaw, unref, watch } from 'vue'
 
 // import { name, version } from '../../../../package.json' assert { type: 'json' }
 const name = '@fixers/nuxt-stripe'

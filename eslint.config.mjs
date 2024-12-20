@@ -1,10 +1,12 @@
 // @ts-check
+import antfu from '@antfu/eslint-config'
 import { createConfigForNuxt } from '@nuxt/eslint-config/flat'
 
 export default createConfigForNuxt({
   features: {
     tooling: true,
     stylistic: true,
+    standalone: false,
   },
   dirs: {
     src: [
@@ -14,10 +16,11 @@ export default createConfigForNuxt({
     ],
   },
 })
-  .append({
-    rules: {
-      '@typescript-eslint/unified-signatures': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
-      'vue/multi-word-component-names': 'off',
-    },
-  })
+  .append(
+    antfu({
+      rules: {
+        'no-alert': 'off',
+        'no-cond-assign': 'off',
+      },
+    }),
+  )

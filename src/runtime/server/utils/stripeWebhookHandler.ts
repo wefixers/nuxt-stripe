@@ -1,10 +1,10 @@
 import type { H3Event } from 'h3'
-import { assertMethod, eventHandler } from 'h3'
-
 import type Stripe from 'stripe'
 
-import { useStripe } from './useStripe'
+import { assertMethod, eventHandler } from 'h3'
+
 import { createStripeEvent } from './createStripeEvent'
+import { useStripe } from './useStripe'
 
 export interface StripeWebhookHandlerContext {
   /**

@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   extends: [
-    '@nuxt/ui-pro'
+    '@nuxt/ui-pro',
   ],
 
   modules: [
@@ -11,30 +11,30 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxt/ui',
     // '@nuxthq/studio',
-    'nuxt-og-image'
+    'nuxt-og-image',
   ],
 
   devtools: {
-    enabled: true
+    enabled: true,
   },
 
   colorMode: {
-    disableTransition: true
+    disableTransition: true,
   },
 
   routeRules: {
     '/': { prerender: true },
-    '/api/search.json': { prerender: true }
+    '/api/search.json': { prerender: true },
   },
 
   future: {
-    compatibilityVersion: 4
+    compatibilityVersion: 4,
   },
 
   compatibilityDate: '2024-07-11',
 
   typescript: {
-    strict: false
+    strict: false,
   },
 
   hooks: {
@@ -43,15 +43,15 @@ export default defineNuxtConfig({
       const globals = components.filter(c => ['UButton', 'UIcon'].includes(c.pascalName))
 
       globals.forEach(c => c.global = true)
-    }
+    },
   },
 
   eslint: {
     config: {
       stylistic: {
         commaDangle: 'never',
-        braceStyle: '1tbs'
-      }
-    }
-  }
+        braceStyle: '1tbs',
+      },
+    },
+  },
 })

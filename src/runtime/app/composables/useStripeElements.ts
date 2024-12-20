@@ -1,6 +1,6 @@
+import type { StripeElements } from '@stripe/stripe-js'
 import type { Ref } from 'vue'
 import { provide, shallowRef } from 'vue'
-import type { StripeElements } from '@stripe/stripe-js'
 
 /**
  * Use Stripe Elements.

@@ -1,10 +1,10 @@
-import { Stripe } from 'stripe'
 import type { H3Event } from 'h3'
+import { useRuntimeConfig } from '#imports'
 import { getHeader, readRawBody } from 'h3'
 
-import { useStripe } from './useStripe'
+import { Stripe } from 'stripe'
 
-import { useRuntimeConfig } from '#imports'
+import { useStripe } from './useStripe'
 
 export interface CreateStripeEventOptions {
   webhookSecret?: string

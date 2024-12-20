@@ -1,6 +1,4 @@
 <script setup lang="ts" generic="T extends StripeElementType">
-import { inject, onBeforeUnmount, shallowRef, watch } from 'vue'
-
 import type {
   StripeAddressElement,
   StripeAddressElementChangeEvent,
@@ -68,7 +66,9 @@ import type {
   StripeShippingAddressElementChangeEvent,
   StripeShippingAddressElementOptions,
 } from '@stripe/stripe-js'
+
 import type { StripeElementsContext } from '../types'
+import { inject, onBeforeUnmount, shallowRef, watch } from 'vue'
 
 // This type map is very useful, we should export it
 interface StripeTypeMap {
