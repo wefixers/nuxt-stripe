@@ -1,14 +1,15 @@
 import type { IStripeConnectInitParams, IStripeConnectUpdateParams, StripeConnectInstance } from '@stripe/connect-js'
 import type { Ref } from 'vue'
+import type { StripeConnectContext } from '../types'
 import { useRuntimeConfig } from '#imports'
 import { loadConnectAndInitialize } from '@stripe/connect-js/pure'
 import { computed, provide, shallowRef, toRaw, unref, watch } from 'vue'
 
+type MaybeRef<T> = T | Ref<T>
+
 export interface UseStripeConnectOptions extends Partial<IStripeConnectInitParams> {
   fetchClientSecret: () => Promise<string>
 }
-
-type MaybeRef<T> = T | Ref<T>
 
 /**
  * Use Stripe Connect.
@@ -49,7 +50,7 @@ export function useStripeConnect(options: MaybeRef<UseStripeConnectOptions>): Re
     deep: true,
   })
 
-  provide('nuxt-stripe-connect', {
+  provide<StripeConnectContext>('nuxt-stripe-connect', {
     stripeConnect,
   })
 
