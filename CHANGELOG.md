@@ -1,6 +1,10 @@
 # Changelog
 
 
+## v4.1.0
+
+[compare changes](https://github.com/wefixers/nuxt-stripe/compare/v4.0.0...v4.1.0)
+
 ## v4.0.0
 
 [compare changes](https://github.com/wefixers/nuxt-stripe/compare/v3.0.4...v4.0.0)
