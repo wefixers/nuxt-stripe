@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T extends ConnectElementTagName">
-import type { ConnectElementTagName, ConnectHTMLElementRecord, StripeConnectInstance } from '@stripe/connect-js'
+import type { ConnectElementTagName, ConnectHTMLElementRecord } from '@stripe/connect-js'
 import type { StripeConnectContext } from '../types'
 import { inject, shallowRef, watch } from 'vue'
 
@@ -36,6 +36,13 @@ function setup() {
     // elementRef.value.replaceChildren(element.value)
   }
 }
+
+watch(stripeConnect, (stripeConnect) => {
+  element.value = stripeConnect?.create(type)
+  setup()
+}, {
+  immediate: true,
+})
 
 watch([stripeConnect, element, elementRef], setup, { immediate: true })
 </script>
