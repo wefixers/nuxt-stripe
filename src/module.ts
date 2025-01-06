@@ -1,3 +1,4 @@
+import type { Nuxt } from '@nuxt/schema'
 import type { StripeConstructorOptions } from '@stripe/stripe-js'
 import type { BirpcGroup } from 'birpc'
 import type { Stripe } from 'stripe'
@@ -135,18 +136,18 @@ export default defineNuxtModule<ModuleOptions>({
     },
   },
   async setup(options, nuxt) {
+    const env = useEnv()
     const logger = useLogger(name)
 
     logger.info(`\`${name}\` setup...`)
 
     const runtimeConfig = nuxt.options.runtimeConfig
-    const envPrefix = runtimeConfig.nitro?.envPrefix || 'NUXT_'
 
     // Runtime Public Config
     runtimeConfig.public.stripe = defu(
       runtimeConfig.public.stripe as Partial<StripeModuleClientOptions>,
       {
-        publishableKey: options.publishableKey || process.env[`${envPrefix}PUBLIC_STRIPE_PUBLISHABLE_KEY `] || '',
+        publishableKey: options.publishableKey || env('PUBLIC_STRIPE_PUBLISHABLE_KEY') || '',
         options: options.client.options,
       },
     )
@@ -155,10 +156,10 @@ export default defineNuxtModule<ModuleOptions>({
     runtimeConfig.stripe = defu(
       runtimeConfig.stripe,
       {
-        secret: options.secret || process.env[`${envPrefix}STRIPE_SECRET`] || '',
+        secret: options.secret || env('STRIPE_SECRET') || '',
         options: options.server.options,
         webhook: {
-          secret: options.webhook.secret || process.env[`${envPrefix}STRIPE_WEBHOOK_SECRET `] || '',
+          secret: options.webhook.secret || env('STRIPE_WEBHOOK_SECRET') || '',
         },
       },
     )
@@ -273,10 +274,7 @@ function startStripeWebhookListener(options: StripeWebhookListenerOptions) {
   const webhookPath = joinURL(origin, options.listener || '/api/stripe/webhook')
 
   // The secret is either provided in the module options or resolved by Nuxt in the runtime config
-  const stripeSecret = options.secret
-    || nuxt.options.runtimeConfig.stripe.secret
-    || process.env[`${nuxt.options.runtimeConfig.nitro?.envPrefix || 'NUXT_'}STRIPE_SECRET`]
-    || ''
+  const stripeSecret = options.secret || nuxt.options.runtimeConfig.stripe.secret
 
   const { getProcess } = startSubprocess(
     {
@@ -355,5 +353,14 @@ function startStripeWebhookListener(options: StripeWebhookListenerOptions) {
         }
       })
     }
+  }
+}
+
+function useEnv(nuxt?: Nuxt) {
+  nuxt ||= useNuxt()
+  const envPrefix = nuxt.options.runtimeConfig.nitro?.envPrefix || 'NUXT_'
+
+  return (key: string) => {
+    return `${process.env[`${envPrefix}${key}`] || ''}`
   }
 }
