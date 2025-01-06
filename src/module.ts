@@ -11,22 +11,6 @@ import defu from 'defu'
 import { joinURL } from 'ufo'
 import { name, version } from '../package.json'
 
-declare module '@nuxt/schema' {
-  interface RuntimeConfig {
-    /**
-     * The Stripe server runtime options.
-     */
-    stripe: StripeModuleServerOptions
-  }
-
-  interface PublicRuntimeConfig {
-    /**
-     * The Stripe client runtime options.
-     */
-    stripe: StripeModuleClientOptions
-  }
-}
-
 export interface StripeModuleClientOptions {
   /**
    * The Stripe publishable key, it is intended to be exposed to the users.
